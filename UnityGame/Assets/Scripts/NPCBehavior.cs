@@ -14,15 +14,19 @@ public class NPCBehavior : MonoBehaviour
 
     public PlayerInteraction playerInteractionScript;
 
+    private GameManager gameManagerScript;
+
     // Start is called before the first frame update
     void Start()
-    {
+    {   
+        gameManagerScript = GameObject.Find("GameManager").GetComponent<GameManager>();
         playerInteractionScript = GameObject.Find("Player").GetComponent<PlayerInteraction>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         dialogueCount = -1; //Default starting position
 
-        //Text Dialogue, temporary (?)
-        //Will we read off of a file for this?
+        //Temporary Text Dialogue for proof of concept of npc interaction
+        //Will likely read off of a text document (This will mean no web compatability)
+        //This current hard-coded dialogue will cause all NPCs to read this exact dialogue
         textDialogue.Add("Hello");
         textDialogue.Add("Hi");
         textDialogue.Add("Line 3");
@@ -41,6 +45,7 @@ public class NPCBehavior : MonoBehaviour
         spriteRenderer.color = Color.red;
         PlayerInteraction.SetCanInteract(true);
         inRange = true;
+        gameManagerScript.Interactable(this.gameObject);
     }
 
     //OnTriggerStay2D isn't strictly necessary, and would trigger hundreds of times in a split second,
@@ -55,6 +60,7 @@ public class NPCBehavior : MonoBehaviour
         inRange = true;
         PlayerInteraction.SetCanInteract(false);
         dialogueCount = -1;
+        gameManagerScript.NotInteractable();
     }
 
 
@@ -66,6 +72,7 @@ public class NPCBehavior : MonoBehaviour
             dialogueCount++;
             return textDialogue[dialogueCount];
         }
+        gameManagerScript.DeactivateDialogue();
         return "Error, no more lines";
         
     }
