@@ -30,15 +30,17 @@ public class GameManager : MonoBehaviour
     void Update()
     {
         //Continuously checks for User Inputs
-        //When E is pressed, it activates both IF statements.
-        //Be aware of that when changing keybinds/logic for this
-        if (canInteract && Input.GetKeyDown(KeyCode.E)){
+        if (isInteracting && Input.GetKeyDown(KeyCode.E)){
+            UpdateDialogueBox(); //While user is interacting, update text box
+        }
+        //Intentionally placed as an else-if so this would trigger last
+        //This avoids skipping the first line of the dialogue from double UpdateDialogueBox() calls
+        //This setup also makes the Interact UI compatible as a button for clicking
+        else if (canInteract && Input.GetKeyDown(KeyCode.E)){
             ActivateDialogue();
         }
-        //While user is interacting, update text box
-        if (isInteracting && Input.GetKeyDown(KeyCode.E)){
-            UpdateDialogueBox();
-        }
+        
+
     }
 
     //Updates the text in the text box
@@ -51,6 +53,7 @@ public class GameManager : MonoBehaviour
         isInteracting = true;
         dialogueTextBox.SetActive(isInteracting);
         interactButton.SetActive(!isInteracting);
+        UpdateDialogueBox();
     }
 
     //Deactivates the dialogue textbox

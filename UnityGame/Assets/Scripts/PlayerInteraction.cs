@@ -7,6 +7,11 @@ https://learn.microsoft.com/en-us/previous-versions/dotnet/netframework-4.0/ms22
 This will be helpful for identifying methods, variables, classes, etc.
 Primarily follows PascalCase conventions.
 */
+
+/* REDUNDANT ------------------ REPLACED BY GAME MANAGER -------------------
+This was originally intended to be the script for NPC interactions, however GameManager.cs covers this issue.
+Thus makin this script useless at the moment.
+*/
 public class PlayerInteraction : MonoBehaviour
 {
     private bool dialogueActive;

@@ -7,12 +7,12 @@ public class NPCBehavior : MonoBehaviour
 {
     SpriteRenderer spriteRenderer;
     public bool inRange;
-    public TextMeshProUGUI dialogueTextBox;
+    //public TextMeshProUGUI dialogueTextBox;
 
     private int dialogueCount;
     private List<string> textDialogue = new List<string>();
 
-    public PlayerInteraction playerInteractionScript;
+    //public PlayerInteraction playerInteractionScript;
 
     private GameManager gameManagerScript;
 
@@ -20,7 +20,7 @@ public class NPCBehavior : MonoBehaviour
     void Start()
     {   
         gameManagerScript = GameObject.Find("GameManager").GetComponent<GameManager>();
-        playerInteractionScript = GameObject.Find("Player").GetComponent<PlayerInteraction>();
+        //playerInteractionScript = GameObject.Find("Player").GetComponent<PlayerInteraction>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         dialogueCount = -1; //Default starting position
 
