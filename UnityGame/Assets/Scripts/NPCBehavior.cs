@@ -14,12 +14,12 @@ public class NPCBehavior : MonoBehaviour
 
     //public PlayerInteraction playerInteractionScript;
 
-    private GameManager gameManagerScript;
+    private DialogueManager dialogueManagerScript;
 
     // Start is called before the first frame update
     void Start()
     {   
-        gameManagerScript = GameObject.Find("GameManager").GetComponent<GameManager>();
+        dialogueManagerScript = GameObject.Find("DialogueManager").GetComponent<DialogueManager>();
         //playerInteractionScript = GameObject.Find("Player").GetComponent<PlayerInteraction>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         dialogueCount = -1; //Default starting position
@@ -31,6 +31,7 @@ public class NPCBehavior : MonoBehaviour
         textDialogue.Add("Hi");
         textDialogue.Add("Line 3");
         textDialogue.Add("End of dialogue.");
+        textDialogue.Add("I need a really long string of text to test how dialogue skipping works!");
     }
 
     // Update is called once per frame
@@ -42,10 +43,13 @@ public class NPCBehavior : MonoBehaviour
     //Triggers when another Collder2D (always the player) enters the NPC's collider range, 
     //which has been manually set to a radius of 1 unit from the NPC. (Forms a 3x3 box)
     private void OnTriggerEnter2D(Collider2D other){
-        spriteRenderer.color = Color.red;
-        PlayerInteraction.SetCanInteract(true);
-        inRange = true;
-        gameManagerScript.Interactable(this.gameObject);
+        //Makes sure it is the player that entered the NPC's area
+        if (other.gameObject.tag == "Player"){
+            spriteRenderer.color = Color.red;
+            PlayerInteraction.SetCanInteract(true);
+            inRange = true;
+            dialogueManagerScript.Interactable(this.gameObject);
+        }
     }
 
     //OnTriggerStay2D isn't strictly necessary, and would trigger hundreds of times in a split second,
@@ -56,11 +60,14 @@ public class NPCBehavior : MonoBehaviour
     //Triggers when the Collder2D (Always the player) exits the NPC's collider range.
     //This should automatically shut down any NPC actions.
     private void OnTriggerExit2D(Collider2D other){
-        spriteRenderer.color = Color.white;
-        inRange = true;
-        PlayerInteraction.SetCanInteract(false);
-        dialogueCount = -1;
-        gameManagerScript.NotInteractable();
+        //Makes sure it is the player that exits the NPC's area
+        if (other.gameObject.tag == "Player"){
+            spriteRenderer.color = Color.white;
+            inRange = true;
+            PlayerInteraction.SetCanInteract(false);
+            dialogueCount = -1;
+            dialogueManagerScript.NotInteractable();
+        }
     }
 
 
@@ -72,7 +79,7 @@ public class NPCBehavior : MonoBehaviour
             dialogueCount++;
             return textDialogue[dialogueCount];
         }
-        gameManagerScript.DeactivateDialogue();
+        dialogueManagerScript.DeactivateDialogue();
         return "Error, no more lines";
         
     }
