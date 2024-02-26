@@ -6,10 +6,11 @@ using TMPro;
 public class UI_Manager : MonoBehaviour
 {
     public GameObject startScreen, menu, objectives;
+    public TransitionScript transitionScript;
     // Start is called before the first frame update
     void Start()
     {
-        
+        transitionScript = GameObject.Find("Main Camera").GetComponent<TransitionScript>();
     }
 
     // Update is called once per frame
@@ -32,6 +33,7 @@ public class UI_Manager : MonoBehaviour
     //Clicker Functions - Likely will add more to these later on
     public void ClickedPlay(){
         Deactivate(startScreen);
+        transitionScript.FancyFadeIn();
     }
 
     public void ClickedCredits(){

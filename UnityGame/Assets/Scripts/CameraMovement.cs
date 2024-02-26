@@ -10,17 +10,12 @@ public class CameraMovement : MonoBehaviour
 
     public Vector2 initialVel, accel;
 
-    public float moveTimeInterval;
-    public float timer;
-
     private IEnumerator currentMove;
     // Start is called before the first frame update
     void Start()
     {
         timeToLockOn = 1.0f;
-        //initialVel = 0.0f;
-        timer = 0.0f;
-        moveTimeInterval = 0.01f;
+
     }
 
     // Update is called once per frame
@@ -54,21 +49,24 @@ public class CameraMovement : MonoBehaviour
         //If accel is negative, multi = -1
         float xNeg = accel.x/Mathf.Abs(accel.x);
         float yNeg = accel.y/Mathf.Abs(accel.y);
-        while (
-            (xNeg*vel.x < 0 || yNeg*vel.y < 0) //Accel is positive
-        ){
-            transform.Translate(vel * moveTimeInterval);
-            vel -= accel * moveTimeInterval;
+        while ( (xNeg*vel.x < 0 || yNeg*vel.y < 0) && vel.magnitude > 0.01) //Accel is positive and the magnitude of movement is meaningful
+        { 
+            //This moves the camera
+            transform.Translate(vel * Time.deltaTime);
+            //This changes the velocity of the camera moving
+            vel -= accel * Time.deltaTime;
             
 
-
+            //This means that the camera is already in the desired position
             if (xNeg*vel.x > 0){
                 vel.x = 0;
+                accel.x = 0;
             }
             if (yNeg*vel.y > 0){
                 vel.y = 0;
+                accel.y = 0;
             }
-            yield return new WaitForSeconds(moveTimeInterval);
+            yield return null;
         }
         StopCoroutine(currentMove);
     }

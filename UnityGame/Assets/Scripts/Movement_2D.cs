@@ -25,11 +25,12 @@ public class Movement_2D : MonoBehaviour
 
     public Animator animator;
 
+    private bool canMove;
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        canMove = true;
     }
 
     // Update is called once per frame
@@ -40,7 +41,8 @@ public class Movement_2D : MonoBehaviour
         float vertical = Input.GetAxis("Vertical");
         Vector2 vector = new Vector2( horizontal , vertical );
         vector.Normalize(); //Prevents players from going faster when moving diagonally
-        transform.Translate(vector * moveSpeed * Time.deltaTime);
+        //If canMove is true, move the playerrrr
+        if (canMove) transform.Translate(vector * moveSpeed * Time.deltaTime);
 
         //Vertical animation movement is prioritized
         //If the player is moving in the vertical direction, play the forward/backward animation
@@ -63,6 +65,10 @@ public class Movement_2D : MonoBehaviour
         }
 
 
+    }
+
+    public void setCanMove(bool canMove){
+        this.canMove = canMove;
     }
 
         //Old version of changing sprite art
