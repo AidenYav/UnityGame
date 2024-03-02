@@ -102,7 +102,9 @@ public class DialogueManager : MonoBehaviour
     public void Interactable(GameObject npc){
         this.npc = npc;
         canInteract = true;
+        interactButton.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = "E - Interact";
         interactButton.SetActive(canInteract);
+        
     }
 
     //Sets all dialogue-related text to false defaults
@@ -148,5 +150,11 @@ public class DialogueManager : MonoBehaviour
         //Dialogue animation is complete
         canContinueDialogue = true;
     }
+
+
+    public bool getCanInteract(){
+        return canInteract;
+    }
+
 
 }

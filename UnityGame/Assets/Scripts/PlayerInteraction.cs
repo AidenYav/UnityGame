@@ -2,59 +2,66 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 /* Naming Conventions information:
 https://learn.microsoft.com/en-us/previous-versions/dotnet/netframework-4.0/ms229043(v=vs.100)?redirectedfrom=MSDN
 This will be helpful for identifying methods, variables, classes, etc.
 Primarily follows PascalCase conventions.
 */
 
-/* REDUNDANT ------------------ REPLACED BY GAME MANAGER -------------------
-This was originally intended to be the script for NPC interactions, however GameManager.cs covers this issue.
-Thus makin this script useless at the moment.
-*/
 public class PlayerInteraction : MonoBehaviour
 {
-    private bool dialogueActive;
-    public GameObject interactButton;
-    private Button button;
 
-    private static bool canInteract;
+    private DialogueManager dialogueScript;
+    public GameObject interactButton;
+    private bool pushObject;
+    private GameObject pushableObject;
     // Start is called before the first frame update
     void Start()
     {
-        button = interactButton.GetComponent<Button>();
+        dialogueScript = GameObject.Find("DialogueManager").GetComponent<DialogueManager>();
+        pushObject = false;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (!dialogueActive && Input.GetKeyDown(KeyCode.E)){
-            //Initialize dialogue
-            BeginDialogue();
+        if(pushObject && Input.GetKeyDown(KeyCode.E)){
+            InteractButtonOnPress();
         }
     }
 
-    //To Test user interactions
-    public void BeginDialogue(){
-        Debug.Log("Hi");
-        dialogueActive = true;
+    public void InteractButtonOnPress(){
+        //If the dialogue is activatable
+        if (dialogueScript.getCanInteract()){
+            //Run the activate dialogue
+            dialogueScript.ActivateDialogue();
+        }
+        //Otherwise, this button can be reused for other interactions
+        //If this button is in range of other
+        else if (pushObject){
+            SetButtonVisability(false);
+            pushableObject.GetComponent<MovableObstacle>().BeginMoving();
+        }
+        
     }
 
-    public void OnClick(){
-        BeginDialogue();
-        button.interactable = false;
-        //interactButton.transform.GetChild(0).transform.GetComponent<TextMeshProUGUI>.text = "";
+
+    public void canPushObject(GameObject obj){
+        pushObject = true;
+        pushableObject = obj;
+        interactButton.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = "E - Push";
+        SetButtonVisability(pushObject);
     }
 
+    public void cannotPushObject(){
+        pushObject = false;
+        pushableObject = null;
+        SetButtonVisability(pushObject);
+    }
 
-
-
-    //Static variables for interact button
-    public static void SetCanInteract(bool interact){
-        canInteract = interact;
+    public void SetButtonVisability(bool visable){
+        interactButton.SetActive(visable);
     }
     
-    public static bool GetInteractable(){
-        return canInteract;
-    }
 }

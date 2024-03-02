@@ -46,7 +46,6 @@ public class NPCBehavior : MonoBehaviour
         //Makes sure it is the player that entered the NPC's area
         if (other.gameObject.tag == "Player"){
             spriteRenderer.color = Color.red;
-            PlayerInteraction.SetCanInteract(true);
             inRange = true;
             dialogueManagerScript.Interactable(this.gameObject);
         }
@@ -64,7 +63,6 @@ public class NPCBehavior : MonoBehaviour
         if (other.gameObject.tag == "Player"){
             spriteRenderer.color = Color.white;
             inRange = true;
-            PlayerInteraction.SetCanInteract(false);
             dialogueCount = -1;
             dialogueManagerScript.NotInteractable();
         }
