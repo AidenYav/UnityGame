@@ -6,12 +6,9 @@ using TMPro;
 public class NPCBehavior : MonoBehaviour
 {
     SpriteRenderer spriteRenderer;
-    public bool inRange;
+    //private bool inRange;
     //public TextMeshProUGUI dialogueTextBox;
-
-    private int dialogueCount;
-    private List<string> textDialogue = new List<string>();
-
+    public TextAsset inkFile;
     //public PlayerInteraction playerInteractionScript;
 
     private DialogueManager dialogueManagerScript;
@@ -22,22 +19,6 @@ public class NPCBehavior : MonoBehaviour
         dialogueManagerScript = GameObject.Find("DialogueManager").GetComponent<DialogueManager>();
         //playerInteractionScript = GameObject.Find("Player").GetComponent<PlayerInteraction>();
         spriteRenderer = GetComponent<SpriteRenderer>();
-        dialogueCount = -1; //Default starting position
-
-        //Temporary Text Dialogue for proof of concept of npc interaction
-        //Will likely read off of a text document (This will mean no web compatability)
-        //This current hard-coded dialogue will cause all NPCs to read this exact dialogue
-        textDialogue.Add("Hello");
-        textDialogue.Add("Hi");
-        textDialogue.Add("Line 3");
-        textDialogue.Add("End of dialogue.");
-        textDialogue.Add("I need a really long string of text to test how dialogue skipping works!");
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 
     //Triggers when another Collder2D (always the player) enters the NPC's collider range, 
@@ -46,8 +27,8 @@ public class NPCBehavior : MonoBehaviour
         //Makes sure it is the player that entered the NPC's area
         if (other.gameObject.tag == "Player"){
             spriteRenderer.color = Color.red;
-            inRange = true;
-            dialogueManagerScript.Interactable(this.gameObject);
+            //inRange = true;
+            dialogueManagerScript.Interactable(this.inkFile);
         }
     }
 
@@ -62,30 +43,9 @@ public class NPCBehavior : MonoBehaviour
         //Makes sure it is the player that exits the NPC's area
         if (other.gameObject.tag == "Player"){
             spriteRenderer.color = Color.white;
-            inRange = true;
-            dialogueCount = -1;
+            //inRange = true;
             dialogueManagerScript.NotInteractable();
         }
-    }
-
-
-    //Returns the current textDialoue count, and increments the count by 1
-    //If the next line does not exist, return "Error, no more lines"
-    public string NextLine(){
-        //Checks if there is a nextLine
-        if (HasNext()){
-            dialogueCount++;
-            return textDialogue[dialogueCount];
-        }
-        dialogueManagerScript.DeactivateDialogue();
-        return "Error, no more lines";
-        
-    }
-
-    //Checks if there is a next line to read
-    //Returns true if there is, otherwise false
-    public bool HasNext(){
-        return dialogueCount + 1 < textDialogue.Count;
     }
 
 }

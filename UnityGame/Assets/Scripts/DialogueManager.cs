@@ -2,20 +2,29 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using Ink.Runtime;
 //Primary Script that connects all other scripts together
+//Credits to Shaped by Rain Studios for inspiration on this system
+//https://www.youtube.com/watch?v=vY0Sk93YUhA&list=PL3viUl9h9k78KsDxXoAzgQ1yRjhm7p8kl&
 public class DialogueManager : MonoBehaviour
 {
 
     //------------------Variables for UI Objects--------------------
     //This will be used to update the text box
-    public GameObject dialogueTextBox;
+    //Serialize Field allows the variable to be interactable through the editor, while still being encapsulated by the class.
+    [SerializeField] private GameObject dialogueTextBox; //Textbox panel
+    [SerializeField] private GameObject interactButton; //Interaction button
+    [SerializeField] private GameObject[] choices; //This stores the choice button object, Currently up to 3 choices can be written at the same time
+
+    private TextMeshProUGUI[] choicesText; //This will work with the choices List, this is for convinence and readability
+
     private TextMeshProUGUI textBox; //Will be used as an alias since pathing to the textbox from the parent game object is unreadable
-    public GameObject interactButton;
-
-
+    
+    
     //-----------------Variables for Interacting with NPCs ------------------
     //This will store the npc currently being interacted with
-    private GameObject npc;
+    
+    private Story currentStory;
 
     //This will control if the player can interact with an npc.
     private bool canInteract;
@@ -40,18 +49,35 @@ public class DialogueManager : MonoBehaviour
     void Start()
     {
         textBox = dialogueTextBox.transform.GetChild(0).gameObject.GetComponent<TextMeshProUGUI>();
+
+        //Initializes the variables used for the choice set-up
+        choicesText = new TextMeshProUGUI[choices.Length];
+        int index = 0;
+        foreach(GameObject choice in choices){
+            choicesText[index] = choice.GetComponentInChildren<TextMeshProUGUI>();
+            choice.SetActive(false);
+            index++;
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
         //Continuously checks for User Inputs
-        if (canContinueDialogue && isInteracting && (Input.GetKeyDown(KeyCode.E) || Input.GetMouseButtonDown(0))) {
+        /* The Following is true if:
+         *  canContinueDialogue = true                  --- This means the player can continue to the next portion of the dialogue
+         *  isInteracting = true                        --- This means the player is currently interacting with the NPC
+         *  E OR Mouse Left Click is pressed            --- This means the player wants to proceed with the dialogue by interacting with their mouse or keyboard*/
+        if (canContinueDialogue && 
+            isInteracting && 
+            ( Input.GetKeyDown(KeyCode.E) || Input.GetMouseButtonDown(0) ) 
+            ) {
             UpdateDialogueBox(); //While user is interacting, update text box
         }
         /*Intentionally placed as an else-if so this would trigger last
          *This avoids skipping the first line of the dialogue from double UpdateDialogueBox() calls
-         *This setup also makes the Interact UI compatible as a button for clicking */
+         *This setup also makes the Interact UI compatible as a button for clicking 
+         * canInteract = true                           --- Player is currently NOT interacting with the NPC, however, they have the ability to do so*/
         else if (canContinueDialogue && canInteract && Input.GetKeyDown(KeyCode.E)){
             ActivateDialogue();
         }
@@ -77,8 +103,13 @@ public class DialogueManager : MonoBehaviour
             StopCoroutine(displayDialogueCoroutine);
         }
         //Creates a new coroutine to begin the typing effect
-        displayDialogueCoroutine = DisplayLine(npc.GetComponent<NPCBehavior>().NextLine());
-        StartCoroutine(displayDialogueCoroutine);
+        if (currentStory.canContinue){ //Checks if the story has more text or not
+            displayDialogueCoroutine = DisplayLine(currentStory.Continue());
+            StartCoroutine(displayDialogueCoroutine);
+        }
+        else{
+            DeactivateDialogue();
+        }
 
     }
 
@@ -93,15 +124,17 @@ public class DialogueManager : MonoBehaviour
     //Deactivates the dialogue textbox
     public void DeactivateDialogue(){
         isInteracting = false;
+        textBox.text = "";
         dialogueTextBox.SetActive(isInteracting);
         NotInteractable();
     }
 
     //Shows interact button and prepare dialogue interaction
     //Takes in the GameObject npc to souce dialogue information
-    public void Interactable(GameObject npc){
-        this.npc = npc;
+    public void Interactable(TextAsset inkJson){
+        currentStory = new Story(inkJson.text);
         canInteract = true;
+        canContinueDialogue = canInteract;
         interactButton.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = "E - Interact";
         interactButton.SetActive(canInteract);
         
@@ -109,7 +142,7 @@ public class DialogueManager : MonoBehaviour
 
     //Sets all dialogue-related text to false defaults
     public void NotInteractable(){
-        this.npc = null;
+        currentStory = null;
         canInteract = false;
         isInteracting = canInteract;
         interactButton.SetActive(canInteract);
@@ -117,6 +150,7 @@ public class DialogueManager : MonoBehaviour
     }
 
     private IEnumerator DisplayLine(string line){
+        hideChoices(0);
         //clear out any dialogue
         textBox.text = "";
         //Boolean to control the player from skipping dialogue
@@ -149,9 +183,58 @@ public class DialogueManager : MonoBehaviour
         }
         //Dialogue animation is complete
         canContinueDialogue = true;
+        //Once the NPC finishes talking, offer choices
+        DisplayChoices();
     }
 
+    //Displays up to 3 available choices
+    private void DisplayChoices(){
+        List<Choice> currentChoices = currentStory.currentChoices;
+        //If the player can make a choice, they must interact with the choice buttons
+        if (currentChoices.Count != 0){
+            canContinueDialogue = false;
+        }
 
+        //Makes sure there aren't too many choices that the UI cannot handle.
+        if (currentChoices.Count > choices.Length){
+            Debug.LogError("Too many choices were provided." + currentChoices.Count +" was provided, UI can only handle " + choices.Length);
+        }
+        //Just in case there are too many choices.
+        else {
+            int index = 0;
+            //For each choice provided, enable and initialize the text choices
+            foreach(Choice choice in currentChoices){
+                choices[index].gameObject.SetActive(true);
+                choicesText[index].text = choice.text;
+                index++;
+            }
+            //Hides any extra choice buttons
+            hideChoices(index);
+        }
+    }
+
+    //Hides all choice buttons ranging from [idx,choices.Length)
+    private void hideChoices(int idx){
+        //This hides all the choice buttons following the player's decision
+        for (int i=idx; i<choices.Length; i++){
+            choices[i].gameObject.SetActive(false);
+        }
+    }
+
+    //This is for the choice buttons to record what the player picks.
+    //The choiceIndex is hard-coded into the button, and should correspond
+    //to the corresponding text choice and name. Ex: Choice0 --> 0
+    public void MakeChoice(int choiceIndex){
+        currentStory.ChooseChoiceIndex(choiceIndex); //Updates the story to continue accordingly
+
+        //This hides all the choice buttons following the player's decision
+        hideChoices(0);
+
+        skipLine = false; //This is to prevent the typing animtion to skip right after the player makes a choice
+        UpdateDialogueBox(); //Following the player's response, immediately continue the dialogue
+    }
+
+    //Getter method for canInteract.
     public bool getCanInteract(){
         return canInteract;
     }
