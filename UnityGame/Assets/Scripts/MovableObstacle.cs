@@ -17,11 +17,6 @@ public class MovableObstacle : MonoBehaviour
         interactionScript = GameObject.Find("InteractionManager").GetComponent<PlayerInteraction>();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 
     private void OnTriggerEnter2D(Collider2D other){
         if (other.gameObject.tag == "Player"){
@@ -78,9 +73,5 @@ public class MovableObstacle : MonoBehaviour
         result.Normalize();
         return result;
     }
-
-
-
-
 
 }

@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using Ink.Runtime;
-//Primary Script that connects all other scripts together
-//Credits to Shaped by Rain Studios for inspiration on this system
+//Primary Script for Dialogue
+//Credits to Shaped by Rain Studios (Trever Mock) for inspiration on this system
 //https://www.youtube.com/watch?v=vY0Sk93YUhA&list=PL3viUl9h9k78KsDxXoAzgQ1yRjhm7p8kl&
 public class DialogueManager : MonoBehaviour
 {
@@ -150,6 +150,7 @@ public class DialogueManager : MonoBehaviour
     }
 
     private IEnumerator DisplayLine(string line){
+        //Clear out any choice buttons that may still be active
         hideChoices(0);
         //clear out any dialogue
         textBox.text = "";
