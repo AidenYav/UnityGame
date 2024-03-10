@@ -4,18 +4,51 @@ using UnityEngine;
 
 public class MovableObstacle : MonoBehaviour
 {
-
+    
     private PlayerInteraction interactionScript;
     public float pushDistance;
     private float pushTime = 1f;
     private bool isMoving = false;
-    public Vector2 direction;
-    //public Vector2 direction;
+    private Vector2 direction;
+
+    private Rigidbody2D rigidBody;
+
     // Start is called before the first frame update
     void Start()
     {
+        pushDistance = 1.5f;
         interactionScript = GameObject.Find("InteractionManager").GetComponent<PlayerInteraction>();
+        rigidBody = this.GetComponentInParent<Rigidbody2D>();
     }
+
+    public void BeginMoving(){
+        if(isMoving){
+            return;
+        }
+        StartCoroutine(Push(direction));
+    }
+    
+    public IEnumerator Push(Vector2 direction){
+        isMoving = true;
+        rigidBody.AddForce(direction*pushDistance*rigidBody.mass, ForceMode2D.Impulse);
+        yield return new WaitForSeconds(pushTime);
+        isMoving = false;
+    }
+
+    //Original function to move the object. Replaced with a rigid-body force system.
+    // public IEnumerator Move(Vector2 direction){
+    //     float curTime = 0f;
+    //     Vector3 start = this.transform.position;
+    //     Vector2 target = pushDistance * direction + (Vector2) start;
+    //     isMoving = true;
+    //     while (curTime < 1){
+    //         this.transform.position = new Vector3(Mathf.Lerp(start.x, target.x,Mathf.Sqrt(curTime)),
+    //                                             Mathf.Lerp(start.y, target.y,Mathf.Sqrt(curTime)) , 0);
+    //         curTime += Time.deltaTime / pushTime;
+    //         yield return null;
+    //     }
+    //     isMoving = false;
+    // }
 
 
     private void OnTriggerEnter2D(Collider2D other){
@@ -32,33 +65,14 @@ public class MovableObstacle : MonoBehaviour
             }
         }
     }
+
     private void OnTriggerExit2D(Collider2D other){
         if (other.gameObject.tag == "Player"){
             interactionScript.cannotPushObject();
         }
     }
 
-    public void BeginMoving(){
-        if(isMoving){
-            return;
-        }
-        StartCoroutine(Move(direction));
-    }
-    
-    public IEnumerator Move(Vector2 direction){
-        float curTime = 0f;
-        Vector3 start = this.transform.position;
-        Vector2 target = pushDistance * direction + (Vector2) start;
-        isMoving = true;
-        while (curTime < 1){
-            this.transform.position = new Vector3(Mathf.Lerp(start.x, target.x,Mathf.Sqrt(curTime)),
-                                                Mathf.Lerp(start.y, target.y,Mathf.Sqrt(curTime)) , 0);
-            curTime += Time.deltaTime / pushTime;
-            yield return null;
-        }
-        isMoving = false;
-    }
-
+    //Identifies what direction the obsticle should be pushed
     private Vector2 IdentifyDirection(Transform other){
         //Produces a normalized direction for the object to travel
         Vector2 result = (Vector2) (this.transform.position - other.position);
@@ -73,5 +87,4 @@ public class MovableObstacle : MonoBehaviour
         result.Normalize();
         return result;
     }
-
 }

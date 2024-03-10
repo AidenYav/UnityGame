@@ -26,6 +26,9 @@ public class PlayerInteraction : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+
+        //Specifically for pushing objects
+        //The Dialogue manager handles the dialogue interaction
         if(pushObject && Input.GetKeyDown(KeyCode.E)){
             InteractButtonOnPress();
         }
