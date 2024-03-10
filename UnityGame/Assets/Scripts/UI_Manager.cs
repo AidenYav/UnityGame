@@ -48,10 +48,13 @@ public class UI_Manager : MonoBehaviour
     //Helper function for transitions to move players between locations
     //Without the use of teleportation objects (which may overcomplicate things)
     private IEnumerator MovePlayer(Vector3 pos){
+        player.GetComponent<Movement_2D>().setCanMove(false);
         transitionScript.FancyFadeOut();
         yield return new WaitForSeconds(2);
         player.transform.position = pos;
         transitionScript.FancyFadeIn();
+        yield return new WaitForSeconds(2);
+        player.GetComponent<Movement_2D>().setCanMove(true);
     }
     //-------------------------------------------------UI Functions/Methods-----------------------------------------------------------
     public void ReturnToMenu(){ //This might be changed in the future

@@ -13,11 +13,16 @@ public class PuzzleManager : MonoBehaviour
 
     public GameObject[] puzzles;
 
-    public GameObject currentPuzzle;
+   
+     [SerializeField] private GameObject currentPuzzle;
+
+    private UI_Manager uiScript;
     // Start is called before the first frame update
     void Start()
     {
+        uiScript = GameObject.Find("Canvas").GetComponent<UI_Manager>();
         RandomizePuzzle();
+
     }
 
     //Randomly selects a pre-built puzzle to use
@@ -39,5 +44,11 @@ public class PuzzleManager : MonoBehaviour
     //Returns the current puzzle object
     public GameObject GetCurrentPuzzle(){
         return currentPuzzle;
+    }
+
+    private void OnTriggerEnter2D(Collider2D other){
+        if (other.gameObject.tag == "Player"){
+            uiScript.PlayMinigameAgain();
+        }
     }
 }
