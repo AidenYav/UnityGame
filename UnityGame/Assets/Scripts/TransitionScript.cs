@@ -17,7 +17,7 @@ public class TransitionScript : MonoBehaviour
 
     private float radius;
 
-    public float FADE_IN = 2f;
+    public float FADE_IN = 3f;
 
     public float FADE_OUT = 0f;
     float horizontal, vertical;
