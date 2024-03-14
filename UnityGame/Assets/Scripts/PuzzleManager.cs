@@ -22,7 +22,6 @@ public class PuzzleManager : MonoBehaviour
     {
         uiScript = GameObject.Find("Canvas").GetComponent<UI_Manager>();
         RandomizePuzzle();
-
     }
 
     //Randomly selects a pre-built puzzle to use
