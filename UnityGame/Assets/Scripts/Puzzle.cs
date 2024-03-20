@@ -15,6 +15,7 @@ public class Puzzle : MonoBehaviour
     private GameObject start, end;
     private UI_Manager uiScript;
     private CurrencyManager currencyScript;
+    private PuzzleManager puzzleScript;
     private TextMeshProUGUI timerUI, resultUI;
     [SerializeField] private double time; //Serialized for monitoring purposes
     private GameObject obsticles;
@@ -30,6 +31,7 @@ public class Puzzle : MonoBehaviour
 
         uiScript = GameObject.Find("Canvas").GetComponent<UI_Manager>();
         currencyScript = GameObject.Find("CurrencyManager").GetComponent<CurrencyManager>();
+        puzzleScript = GameObject.Find("PuzzleManager").GetComponent<PuzzleManager>();
         
         time = 0;
         timerUI = uiScript.timer.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
@@ -70,8 +72,7 @@ public class Puzzle : MonoBehaviour
         //Activate the congradulations Screen
         
         if (timer != null){
-            StopCoroutine(timer);
-            timer = null;
+            StopTimer();
         
             uiScript.MinigameEnd();
             string result = time < 60 ? "Success" : "Failed";
@@ -87,11 +88,10 @@ public class Puzzle : MonoBehaviour
     }
 
     public void StartPuzzle(){
+        puzzleScript.SetInPuzzle(true);
         uiScript.MinigameStart();
         //Stops previous timer coroutines
-        if (timer != null){
-            StopCoroutine(timer);
-        }
+        StopTimer();
         timer = UpdateTimer();
         StartCoroutine(timer);
     }
@@ -126,6 +126,13 @@ public class Puzzle : MonoBehaviour
         
         for(int i=0; i < initialObsticlePosition.Length; i++){
             initialObsticlePosition[i] = obsticles.transform.GetChild(i).transform.position;
+        }
+    }
+
+    public void StopTimer(){
+        if (timer != null){
+            StopCoroutine(timer);
+            timer = null;
         }
     }
 }

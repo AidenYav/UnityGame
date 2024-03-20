@@ -17,11 +17,24 @@ public class PuzzleManager : MonoBehaviour
      [SerializeField] private GameObject currentPuzzle;
 
     private UI_Manager uiScript;
+    private bool inPuzzle;
     // Start is called before the first frame update
     void Start()
     {
         uiScript = GameObject.Find("Canvas").GetComponent<UI_Manager>();
         RandomizePuzzle();
+    }
+
+    void Update()
+    {
+        //Resets the puzzle 
+        if (Input.GetKeyDown(KeyCode.R) && inPuzzle){
+            Puzzle puzScript = currentPuzzle.GetComponent<Puzzle>();
+            puzScript.StopTimer();
+            puzScript.ResetObsticles();
+            uiScript.MinigameStop();
+            uiScript.PlayMinigameAgain();
+        } 
     }
 
     //Randomly selects a pre-built puzzle to use
@@ -34,7 +47,7 @@ public class PuzzleManager : MonoBehaviour
     public GameObject RandomizePuzzle(GameObject prev){
         //The available puzzle set must contain at least 2 puzzles
         //If that is true, this will continously 
-        while (puzzles.Length > 1 && currentPuzzle != prev){
+        while (puzzles.Length > 1 && currentPuzzle == prev){
             currentPuzzle = puzzles[Random.Range(0,puzzles.Length)];
         }
         return currentPuzzle;
@@ -43,6 +56,10 @@ public class PuzzleManager : MonoBehaviour
     //Returns the current puzzle object
     public GameObject GetCurrentPuzzle(){
         return currentPuzzle;
+    }
+
+    public void SetInPuzzle(bool inPuzzle){
+        this.inPuzzle = inPuzzle;
     }
 
     private void OnTriggerEnter2D(Collider2D other){

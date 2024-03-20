@@ -87,13 +87,14 @@ public class UI_Manager : MonoBehaviour
 
     public void LeaveMiniGame(){
         Deactivate(minigameResult);
+        puzzleScript.SetInPuzzle(false);
         //Should place them outside of the building/tavern or something? not sure where we should place them yet.
         StartCoroutine(MovePlayer(new Vector3(0,0,0)));
     }
 
     public void PlayMinigameAgain(){
         Deactivate(minigameResult);
-        GameObject newPuzzle = puzzleScript.RandomizePuzzle();
+        GameObject newPuzzle = puzzleScript.RandomizePuzzle(puzzleScript.GetCurrentPuzzle());
         StartCoroutine(MovePlayer(newPuzzle.transform.GetComponent<Puzzle>().GetStartPosition()));
     }
 
