@@ -15,11 +15,14 @@ public class UI_Manager : MonoBehaviour
     private TransitionScript transitionScript;
     private GameObject player;
     private PuzzleManager puzzleScript;
+
+    private CloudSaveScript saveScript;
     // Start is called before the first frame update
     void Start()
     {
         transitionScript = GameObject.Find("Main Camera").GetComponent<TransitionScript>();
         puzzleScript = GameObject.Find("PuzzleManager").GetComponent<PuzzleManager>();
+        saveScript = GameObject.Find("DataManager").GetComponent<CloudSaveScript>();
         player = GameObject.Find("Player");
         Activate(startScreen);
     }
@@ -37,6 +40,11 @@ public class UI_Manager : MonoBehaviour
     //Clicker Functions - Likely will add more to these later on
     public void ClickedPlay(){
         Deactivate(startScreen);
+        StartCoroutine(WaitForDataLoading());
+        
+    }
+    private IEnumerator WaitForDataLoading(){
+        yield return new WaitUntil(() => saveScript.GetDataLoaded());
         transitionScript.FancyFadeIn();
     }
 

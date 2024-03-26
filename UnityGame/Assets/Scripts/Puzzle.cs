@@ -16,6 +16,7 @@ public class Puzzle : MonoBehaviour
     private UI_Manager uiScript;
     private CurrencyManager currencyScript;
     private PuzzleManager puzzleScript;
+    private CloudSaveScript saveScript;
     private TextMeshProUGUI timerUI, resultUI;
     [SerializeField] private double time; //Serialized for monitoring purposes
     private GameObject obsticles;
@@ -32,7 +33,8 @@ public class Puzzle : MonoBehaviour
         uiScript = GameObject.Find("Canvas").GetComponent<UI_Manager>();
         currencyScript = GameObject.Find("CurrencyManager").GetComponent<CurrencyManager>();
         puzzleScript = GameObject.Find("PuzzleManager").GetComponent<PuzzleManager>();
-        
+        saveScript = GameObject.Find("DataManager").GetComponent<CloudSaveScript>();
+
         time = 0;
         timerUI = uiScript.timer.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
         resultUI = uiScript.minigameResult.transform.GetChild(0).transform.GetChild(1).GetComponent<TextMeshProUGUI>();
@@ -55,7 +57,7 @@ public class Puzzle : MonoBehaviour
         int min = (int) (t/60);
         int sec = (int) Math.Floor(t%60);
         int centSec =  (int) Math.Floor((t%1) * 100);
-        return String.Format("Time: {0}:{1:d2}:{2:d2}",min,sec,centSec);
+        return String.Format("{0}:{1:d2}:{2:d2}",min,sec,centSec);
     }
 
     public GameObject GetChildrenByName(string name){
@@ -76,9 +78,24 @@ public class Puzzle : MonoBehaviour
         
             uiScript.MinigameEnd();
             string result = time < 60 ? "Success" : "Failed";
-            string personalBest = "0:00:00"; //Replace in the future with a save system
+            
+            double personalBest = time;//Default best is the current time
+            //But reassign if the best time is not null
+            if(saveScript.GetValue("BestTime") != null){
+                personalBest = double.Parse(saveScript.GetValue("BestTime").ToString());
+            }
+            //If the new time is better than the previous personal best, update the data base.
+            //While this if statement is slightly redundant, it can be used in the future to
+            //Create some sort of bonus effect when achieving a new personal best.
+            if(personalBest >= time){
+                personalBest = time;
+                //Truncating the data to reduce the number of bytes used when saving data.
+                saveScript.AddValue("BestTime", Math.Floor(personalBest * 100)/100 );
+            }
+
+
             int earnings = (int) Math.Floor(1000/time);
-            resultUI.text = String.Format("Result: {0}\nPersonalBest: {1} \nCurrentTime: {2} \nEarnings: {3:C}", result, personalBest, FormatTime(time), earnings);
+            resultUI.text = String.Format("Result: {0}\nPersonal Best: {1} \nTime: {2} \nEarnings: {3:C}", result, FormatTime(personalBest), FormatTime(time), earnings);
             currencyScript.ChangeMoney(earnings);
         }   
         else{
