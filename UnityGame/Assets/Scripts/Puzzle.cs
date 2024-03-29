@@ -69,7 +69,7 @@ public class Puzzle : MonoBehaviour
         Debug.Log("Unable to find child object by name: "+ name);
         return null;
     }
-
+    #pragma warning disable CS4014
     public void ReachedEnd(){
         //Activate the congradulations Screen
         
@@ -87,10 +87,15 @@ public class Puzzle : MonoBehaviour
             //If the new time is better than the previous personal best, update the data base.
             //While this if statement is slightly redundant, it can be used in the future to
             //Create some sort of bonus effect when achieving a new personal best.
-            if(personalBest >= time){
+            if(personalBest <= time){
                 personalBest = time;
                 //Truncating the data to reduce the number of bytes used when saving data.
                 saveScript.AddValue("BestTime", Math.Floor(personalBest * 100)/100 );
+
+                //If the player is properly logged in
+                if (saveScript.GetSuccessfulLogin()){
+                    saveScript.LeaderboardAddScore(Math.Floor(personalBest * 100)/100);
+                }
             }
 
 
@@ -103,7 +108,7 @@ public class Puzzle : MonoBehaviour
             time = -1; //To clearly show something is wrong
         }
     }
-
+    #pragma warning restore CS4014
     public void StartPuzzle(){
         puzzleScript.SetInPuzzle(true);
         uiScript.MinigameStart();

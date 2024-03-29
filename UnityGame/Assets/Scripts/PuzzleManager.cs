@@ -29,12 +29,16 @@ public class PuzzleManager : MonoBehaviour
     {
         //Resets the puzzle 
         if (Input.GetKeyDown(KeyCode.R) && inPuzzle){
-            Puzzle puzScript = currentPuzzle.GetComponent<Puzzle>();
-            puzScript.StopTimer();
-            puzScript.ResetObsticles();
-            uiScript.MinigameStop();
-            uiScript.PlayMinigameAgain();
+            RestartPuzzle();
         } 
+    }
+
+    public void RestartPuzzle(){
+        Puzzle puzScript = currentPuzzle.GetComponent<Puzzle>();
+        puzScript.StopTimer();
+        puzScript.ResetObsticles();
+        uiScript.MinigameStop();
+        uiScript.PlayMinigameAgain();
     }
 
     //Randomly selects a pre-built puzzle to use
@@ -60,6 +64,10 @@ public class PuzzleManager : MonoBehaviour
 
     public void SetInPuzzle(bool inPuzzle){
         this.inPuzzle = inPuzzle;
+    }
+
+    public bool GetInPuzzle(){
+        return inPuzzle;
     }
 
     private void OnTriggerEnter2D(Collider2D other){
