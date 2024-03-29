@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -20,6 +21,8 @@ public class UI_Manager : MonoBehaviour
 
     private CloudSaveScript saveScript;
 
+    private Movement_2D moveScript;
+
     private bool signingUp = false;//False for login procedure, true for sign in procedure
     // Start is called before the first frame update
 
@@ -31,6 +34,7 @@ public class UI_Manager : MonoBehaviour
         puzzleScript = GameObject.Find("PuzzleManager").GetComponent<PuzzleManager>();
         saveScript = GameObject.Find("DataManager").GetComponent<CloudSaveScript>();
         player = GameObject.Find("Player");
+        moveScript = player.GetComponent<Movement_2D>();
         Activate(startScreen);
         
         foreach (Transform child in leaderboardPage.transform.GetChild(0)) leaderNames.Add(child.gameObject.GetComponent<TextMeshProUGUI>());
@@ -73,6 +77,7 @@ public class UI_Manager : MonoBehaviour
     private IEnumerator WaitForDataLoading(){
         yield return new WaitUntil(() => saveScript.GetDataLoaded());
         transitionScript.FancyFadeIn();
+        moveScript.SetCanMove(true);
     }
 
     public void ClickedCredits(){
@@ -83,13 +88,13 @@ public class UI_Manager : MonoBehaviour
     //Helper function for transitions to move players between locations
     //Without the use of teleportation objects (which may overcomplicate things)
     private IEnumerator MovePlayer(Vector3 pos){
-        player.GetComponent<Movement_2D>().setCanMove(false);
+        player.GetComponent<Movement_2D>().SetCanMove(false);
         transitionScript.FancyFadeOut();
         yield return new WaitForSeconds(2);
         player.transform.position = pos;
         transitionScript.FancyFadeIn();
         yield return new WaitForSeconds(2);
-        player.GetComponent<Movement_2D>().setCanMove(true);
+        player.GetComponent<Movement_2D>().SetCanMove(true);
     }
     //-------------------------------------------------UI Functions/Methods-----------------------------------------------------------
     public void ReturnToMenu(){ //This might be changed in the future
@@ -104,6 +109,7 @@ public class UI_Manager : MonoBehaviour
 
     public void ClickedResume(){
         Deactivate(menu);
+        moveScript.SetCanMove(true);
     }
 
     public void MinigameEnd(){
@@ -141,16 +147,23 @@ public class UI_Manager : MonoBehaviour
         string password1 = signUp.transform.GetChild(1).gameObject.GetComponent<TMP_InputField>().text;
         //A proper login system would be nice to have, especially if this was for a real game.
         //Maybe come back to this issue if there is extra time to develop this.
-        //string password2 = signUp.transform.GetChild(2).gameObject.GetComponent<TextMeshProUGUI>().text;
-        //TextMeshProUGUI errorBox = string username = signUp.transform.GetChild(3).gameObject.GetComponent<TextMeshProUGUI>();
-        if(username.Length < 3 || password1.Length < 3){
-            Debug.Log("Username/Password too short");
-            return;
-        }
+        string password2 = signUp.transform.GetChild(2).gameObject.GetComponent<TMP_InputField>().text;
+        TextMeshProUGUI errorBox = signUp.transform.GetChild(3).gameObject.GetComponent<TextMeshProUGUI>();
+        
         if (signingUp){
-            await saveScript.SignUpWithUsernamePassword(username, password1);
+            //Displays potential sign-up issues
+            errorBox.text = SignUpErrors(username,password1,password2);
+            //Checks if there are potential issues with sign up
+            //Ignores the obvious issue of a username being already taken
+            //This is an issue, but not a large one as there should be a virtually infinate number of possible usernames still available considering
+            //The game is still in development
+            if (errorBox.text == ""){
+                string otherErrors = await saveScript.SignUpWithUsernamePassword(username, password1);
+                errorBox.text = otherErrors;
+            }
         }else{
-            await saveScript.SignInWithUsernamePasswordAsync(username, password1);
+            
+            errorBox.text = await saveScript.SignInWithUsernamePasswordAsync(username, password1);
         }
 
         //Send values to CloudSaveScript to create an account
@@ -161,8 +174,65 @@ public class UI_Manager : MonoBehaviour
         else{
             Debug.Log("Error with " + (signingUp ? "Account Creation" : "Login"));
         }
-        
-        
+    }
+
+    //Helper methods because username/password debugging has so many restrictions
+    private string SignUpErrors(string username, string password1, string password2){
+        string errors = "";
+        if(username.Length<3) errors += "Username must have at least 3 characters\n";
+        else if(username.Length>20) errors += "Usernames cannot have more than 20 characters\n";
+        if(password1 != password2)errors += "Passwords do not match\n";
+        if(password1.Length < 8) errors += "Password must be at least 8 characters\n";
+        if(!ContainsUppercase(password1)) errors += "Password must contain an uppercase letter\n";
+        if(!ContainsLowercase(password1)) errors += "Password must contain an lowercase letter\n";
+        if(!ContainsDigit(password1)) errors += "Password must contain a numerical digit\n";
+        if(!ContainsSpecialChar(password1)) errors += "Password must contain a symbol\n";
+        return errors;
+    }
+
+    private bool ContainsUppercase(string s){
+        foreach(char c in s){
+            if(Char.IsUpper(c)){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private bool ContainsLowercase(string s){
+        foreach(char c in s){
+            if(Char.IsLower(c)){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private bool ContainsDigit(string s){
+        foreach(char c in s){
+            if(Char.IsDigit(c)){
+                return true;
+            }
+        }
+        return false;
+    }
+    private bool ContainsSpecialChar(string s){
+        foreach(char c in s){
+            if(!Char.IsLetterOrDigit(c)){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void BackToLoginChoices(){
+        Activate(loginChoices);
+        Deactivate(signUp);
+    }
+
+    public void BackToStartScreen(){
+        Activate(startScreen);
+        Deactivate(loginChoices);
     }
 
     public void LoginOptions(int choice){
@@ -173,11 +243,13 @@ public class UI_Manager : MonoBehaviour
         if (choice == 0){
             Activate(signUp);
             signUp.transform.GetChild(4).GetChild(0).gameObject.GetComponent<TextMeshProUGUI>().text = "Sign In";
+            Deactivate(signUp.transform.GetChild(2).gameObject);
             signingUp = false;
         }
         else if(choice == 1){
             Activate(signUp);
             signUp.transform.GetChild(4).GetChild(0).gameObject.GetComponent<TextMeshProUGUI>().text = "Create Account!";
+            Activate(signUp.transform.GetChild(2).gameObject);
             signingUp = true;
         }
         else{
@@ -213,6 +285,7 @@ public class UI_Manager : MonoBehaviour
 
     public void OpenInGameMenu(){
         Activate(menu);
+        moveScript.SetCanMove(false);
         //If the player is currently in a puzzle, enable the UI button for restarting the puzzle
         if (puzzleScript.GetInPuzzle()){
             Activate(menu.transform.GetChild(menu.transform.childCount-1).gameObject);

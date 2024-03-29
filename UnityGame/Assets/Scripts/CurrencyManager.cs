@@ -23,7 +23,7 @@ public class CurrencyManager : MonoBehaviour
     }
 
     private IEnumerator CheckForData(){
-        Debug.Log("Loading Data");
+        Debug.Log("Awaiting Data");
         yield return new WaitUntil(() => saveScript.GetDataLoaded());
         Debug.Log("Data loaded!");
         //Initializes the data into the script

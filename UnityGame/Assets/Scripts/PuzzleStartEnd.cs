@@ -32,7 +32,7 @@ public class PuzzleStartEnd : MonoBehaviour
             //When the player reaches the end, show the results
             if(objectType == type.END){
                 puzzleScript.ReachedEnd();
-                movementScript.setCanMove(false);
+                movementScript.SetCanMove(false);
             }
         }
     }
@@ -48,7 +48,7 @@ public class PuzzleStartEnd : MonoBehaviour
             //Otherwise, this object is END object
             else{
                 puzzleScript.ResetObsticles();
-                movementScript.setCanMove(true);
+                movementScript.SetCanMove(true);
             }
         }
         

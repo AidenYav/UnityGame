@@ -57,7 +57,7 @@ public class CloudSaveScript : MonoBehaviour
             Debug.Log(e);
         }
     }
-    public async Task SignUpWithUsernamePassword(string username, string password)
+    public async Task<string> SignUpWithUsernamePassword(string username, string password)
     {
         try
         {
@@ -65,23 +65,30 @@ public class CloudSaveScript : MonoBehaviour
             await AuthenticationService.Instance.UpdatePlayerNameAsync(username);
             Debug.Log("SignUp is successful.");
             successfulLogin = true;
-
+            dataLoaded = true; //Normally would call LoadData(), but there is no data to load, so simply set data is loaded
         }
         catch (AuthenticationException ex)
         {
             // Compare error code to AuthenticationErrorCodes
             // Notify the player with the proper error message
+            Debug.Log("Hi");
+            Debug.Log(ex.Message);
+            
             Debug.LogException(ex);
+            return ex.Message;
         }
         catch (RequestFailedException ex)
         {
             // Compare error code to CommonErrorCodes
             // Notify the player with the proper error message
+            Debug.Log("Hello");
             Debug.LogException(ex);
+            return ex.Message;
         }
+        return "";
     }
 
-    public async Task SignInWithUsernamePasswordAsync(string username, string password)
+    public async Task<string> SignInWithUsernamePasswordAsync(string username, string password)
     {
         try
         {
@@ -96,13 +103,16 @@ public class CloudSaveScript : MonoBehaviour
             // Compare error code to AuthenticationErrorCodes
             // Notify the player with the proper error message
             Debug.LogException(ex);
+            return ex.Message;
         }
         catch (RequestFailedException ex)
         {
             // Compare error code to CommonErrorCodes
             // Notify the player with the proper error message
             Debug.LogException(ex);
+            return ex.Message;
         }
+        return "";
     }
 
     public async Task AddUsernamePasswordAsync(string username, string password)

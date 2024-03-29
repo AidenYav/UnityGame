@@ -55,7 +55,7 @@ public class ObjectTeleport : MonoBehaviour
     //This handles all the animations for moving the player from one teleporter to another
     IEnumerator transitionAnimation(GameObject player){
         //Stop player movement
-        movementScript.setCanMove(false);
+        movementScript.SetCanMove(false);
 
         //Prepare to move Player, this makes sure the player isn't instantly teleported back
         destScript.setCanTeleport(false);
@@ -72,7 +72,7 @@ public class ObjectTeleport : MonoBehaviour
         yield return new WaitForSeconds(2);
 
         //Start player movement
-        movementScript.setCanMove(true);
+        movementScript.SetCanMove(true);
     }
 
 }

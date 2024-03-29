@@ -30,7 +30,7 @@ public class Movement_2D : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        canMove = true;
+        canMove = false;
     }
 
     // Update is called once per frame
@@ -67,7 +67,7 @@ public class Movement_2D : MonoBehaviour
 
     }
 
-    public void setCanMove(bool canMove){
+    public void SetCanMove(bool canMove){
         this.canMove = canMove;
     }
 
