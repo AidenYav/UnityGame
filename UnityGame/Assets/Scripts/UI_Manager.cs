@@ -12,7 +12,7 @@ public class UI_Manager : MonoBehaviour
 {
     // This could utilize a List, but then it would be difficult to use/read in the code
     public GameObject startScreen, menu, objectives, creditScreen,
-                        minigameResult, help, timer;
+                        minigameResult, help, timer, cashCount;
 
     public GameObject signUp, loginChoices, leaderboardPage;
     private TransitionScript transitionScript;
@@ -22,6 +22,8 @@ public class UI_Manager : MonoBehaviour
     private CloudSaveScript saveScript;
 
     private Movement_2D moveScript;
+
+    private CurrencyManager currencyScript;
 
     private bool signingUp = false;//False for login procedure, true for sign in procedure
     // Start is called before the first frame update
@@ -33,6 +35,7 @@ public class UI_Manager : MonoBehaviour
         transitionScript = GameObject.Find("Main Camera").GetComponent<TransitionScript>();
         puzzleScript = GameObject.Find("PuzzleManager").GetComponent<PuzzleManager>();
         saveScript = GameObject.Find("DataManager").GetComponent<CloudSaveScript>();
+        currencyScript = GameObject.Find("CurrencyManager").GetComponent<CurrencyManager>();
         player = GameObject.Find("Player");
         moveScript = player.GetComponent<Movement_2D>();
         Activate(startScreen);
@@ -104,11 +107,13 @@ public class UI_Manager : MonoBehaviour
 
     public void ClickedHelp(){
         Deactivate(menu);
+        Deactivate(cashCount);
         //Activate(help);
     }
 
     public void ClickedResume(){
         Deactivate(menu);
+        Deactivate(cashCount);
         moveScript.SetCanMove(true);
     }
 
@@ -158,11 +163,22 @@ public class UI_Manager : MonoBehaviour
             //This is an issue, but not a large one as there should be a virtually infinate number of possible usernames still available considering
             //The game is still in development
             if (errorBox.text == ""){
-                string otherErrors = await saveScript.SignUpWithUsernamePassword(username, password1);
-                errorBox.text = otherErrors;
+                errorBox.text = await saveScript.SignUpWithUsernamePassword(username, password1);
+                //This is for saving a guset account into a real account
+                //By default, it will save nothing on a completely new account
+                //But will save pre-existing guest data if they are creating an account
+                saveScript.ManualSave(); 
+                
             }
-        }else{
-            
+        }
+        //If the player is not signing up, they must be logging in
+        else{
+            //If data is loaded (On a guset account), and the player logs in,
+            //First signout of the guest account and then login with the players credentials
+            if(saveScript.GetDataLoaded()){
+                saveScript.SetDataLoaded(false);
+                currencyScript.ResyncCashData();
+            }
             errorBox.text = await saveScript.SignInWithUsernamePasswordAsync(username, password1);
         }
 
@@ -179,13 +195,13 @@ public class UI_Manager : MonoBehaviour
     //Helper methods because username/password debugging has so many restrictions
     private string SignUpErrors(string username, string password1, string password2){
         string errors = "";
-        if(username.Length<3) errors += "Username must have at least 3 characters\n";
-        else if(username.Length>20) errors += "Usernames cannot have more than 20 characters\n";
-        if(password1 != password2)errors += "Passwords do not match\n";
-        if(password1.Length < 8) errors += "Password must be at least 8 characters\n";
-        if(!ContainsUppercase(password1)) errors += "Password must contain an uppercase letter\n";
-        if(!ContainsLowercase(password1)) errors += "Password must contain an lowercase letter\n";
-        if(!ContainsDigit(password1)) errors += "Password must contain a numerical digit\n";
+        if(username.Length<3)               errors += "Username must have at least 3 characters\n";
+        else if(username.Length>20)         errors += "Usernames cannot have more than 20 characters\n";
+        if(password1 != password2)          errors += "Passwords do not match\n";
+        if(password1.Length < 8)            errors += "Password must be at least 8 characters\n";
+        if(!ContainsUppercase(password1))   errors += "Password must contain an uppercase letter\n";
+        if(!ContainsLowercase(password1))   errors += "Password must contain an lowercase letter\n";
+        if(!ContainsDigit(password1))       errors += "Password must contain a numerical digit\n";
         if(!ContainsSpecialChar(password1)) errors += "Password must contain a symbol\n";
         return errors;
     }
@@ -235,6 +251,16 @@ public class UI_Manager : MonoBehaviour
         Deactivate(loginChoices);
     }
 
+    public void MenuToLoginChoices(){
+        Activate(loginChoices);
+        Deactivate(menu);
+        Deactivate(cashCount);
+        if(saveScript.GetSuccessfulLogin()){
+            saveScript.SignOut();
+            saveScript.SetSuccessfulLogin(false);
+        }
+    }
+
     public void LoginOptions(int choice){
         /*0 --> Login/sign in
          *1 --> Sign up
@@ -242,28 +268,32 @@ public class UI_Manager : MonoBehaviour
         */
         if (choice == 0){
             Activate(signUp);
+            //Retrieves the button under the sign-up page to set as "Sign In"
             signUp.transform.GetChild(4).GetChild(0).gameObject.GetComponent<TextMeshProUGUI>().text = "Sign In";
             Deactivate(signUp.transform.GetChild(2).gameObject);
             signingUp = false;
         }
         else if(choice == 1){
             Activate(signUp);
+            //Retrieves the button under the sign-up page to set as "Create Account!"
             signUp.transform.GetChild(4).GetChild(0).gameObject.GetComponent<TextMeshProUGUI>().text = "Create Account!";
             Activate(signUp.transform.GetChild(2).gameObject);
             signingUp = true;
         }
         else{
-            saveScript.AnonymousLogin();
             //Load player into game
+            saveScript.SetDataLoaded(true); //So the game can load
             StartCoroutine(WaitForDataLoading());
 
         }
+        currencyScript.ResyncCashData();
         Deactivate(loginChoices);
     }
 
     public async void LoadLeaderBoard(){
         Activate(leaderboardPage);
         Deactivate(menu);
+        Deactivate(cashCount);
         LeaderboardScoresPage page = await saveScript.GetScores();
         //Fill in the names and scores into the texts
         for(int i=0; i<page.Total; i++){
@@ -281,22 +311,34 @@ public class UI_Manager : MonoBehaviour
     public void CloseLeaderboard(){
         Deactivate(leaderboardPage);
         Activate(menu);
+        Activate(cashCount);
     }
 
     public void OpenInGameMenu(){
         Activate(menu);
+        Activate(cashCount);
         moveScript.SetCanMove(false);
         //If the player is currently in a puzzle, enable the UI button for restarting the puzzle
         if (puzzleScript.GetInPuzzle()){
-            Activate(menu.transform.GetChild(menu.transform.childCount-1).gameObject);
+            Activate(menu.transform.Find("Restart Puzzle").gameObject);
         }
         else{
-            Deactivate(menu.transform.GetChild(menu.transform.childCount-1).gameObject);
+            Deactivate(menu.transform.Find("Restart Puzzle").gameObject);
+        }
+        if (saveScript.GetSuccessfulLogin()){
+            Activate(menu.transform.Find("Save").gameObject);
+            menu.transform.Find("Login_SignUp/Text").GetComponent<TextMeshProUGUI>().text = "Sign Out";
+        }
+        else{
+            Deactivate(menu.transform.Find("Save").gameObject);
+            menu.transform.Find("Login_SignUp/Text").GetComponent<TextMeshProUGUI>().text = "Login/Sign Up";
         }
     }
 
     public void RestartPuzzle(){
         Deactivate(menu);
+        Deactivate(cashCount);
         puzzleScript.RestartPuzzle();
     }
+
 }

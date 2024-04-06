@@ -12,82 +12,79 @@ using Unity.Services.Leaderboards;
 using Unity.Services.Leaderboards.Models;
 public class CloudSaveScript : MonoBehaviour
 {
-    private Dictionary<string, object> data = new Dictionary<string, object>();
+    //This is the dictionary storing all the data loaded
+    private Dictionary<string, object> data;
+    //These booleans signal to other scripts about how the current state of the player's account regarding account information
     private bool dataLoaded = false, successfulLogin = false;
 
+    //Leaderboard ID, DO NOT CHANGE. This is an ID retrieved from the unity dashboard used to access Unity's leaderboard services
     private const string LEADERBOARD_ID = "Fastest_Times";
 
     // Start is called before the first frame update
     async void Start()
     {
+        ClearData();//Initializes a default dictionary to store data
         //Will probably add some internet check here
         try
 		{
+            //Must be used to activate cloud-save services
             await UnityServices.InitializeAsync();
-            //await AuthenticationService.Instance.SignInAnonymouslyAsync();
-            //Debug.Log($"PlayerID: {AuthenticationService.Instance.PlayerId}"); 
-            //data = await CloudSaveService.Instance.Data.LoadAsync();
-            //Tester data
-            // var data = new Dictionary<string, object>{ { "MySaveKey123", "HelloWorld123" } };
-            // await CloudSaveService.Instance.Data.ForceSaveAsync(data);
-            
-            //----------------------------------Disabled for testing leaderboard, RE-ENABLE LATER------------------------------------------------
-            //await LoadData();
-            //Debug.Log("Successfully loaded data!");
-            //StartCoroutine(PeriodicSave());
-
 		}
 		catch (Exception e)
 		{
 			Debug.LogException(e);
 		}
-        
-        
-        // await LeaderboardAddScore();
-        // await LeaderboardGetPlayerScore();
     }
 
     //--------------------------------------------Authenticator Sign In/Up----------------------------------------------------------------
-    public async Task AnonymousLogin(){
+
+    //SignOut will clear any current player data AND
+    //Will sign out of the authenticator so the player can properly sign up/login
+    public void SignOut(){
         try{
-            await AuthenticationService.Instance.SignInAnonymouslyAsync();
-            await LoadData();
+            ClearData(); //Clear any current player data
+            AuthenticationService.Instance.SignOut();
         }
-        catch(Exception e){
+        catch (Exception e){
             Debug.Log(e);
         }
     }
+
+    //Creates a new account using the passed username and password provided
     public async Task<string> SignUpWithUsernamePassword(string username, string password)
     {
         try
         {
             await AuthenticationService.Instance.SignUpWithUsernamePasswordAsync(username, password);
-            await AuthenticationService.Instance.UpdatePlayerNameAsync(username);
+            await AuthenticationService.Instance.UpdatePlayerNameAsync(username); //Sets username to their account username
             Debug.Log("SignUp is successful.");
             successfulLogin = true;
-            dataLoaded = true; //Normally would call LoadData(), but there is no data to load, so simply set data is loaded
+            dataLoaded = true; //Normally would call LoadData(), but there is no data to load (because its a new account), so simply set data is loaded
+            ManualSave();
+            //If the player has a best time, add it to the leaderboard now that the player has an account
+            if(GetValue("BestTime") != null){
+                LeaderboardAddScore(double.Parse(GetValue("BestTime").ToString()));
+            }
         }
         catch (AuthenticationException ex)
         {
             // Compare error code to AuthenticationErrorCodes
             // Notify the player with the proper error message
-            Debug.Log("Hi");
-            Debug.Log(ex.Message);
-            
-            Debug.LogException(ex);
+            // Debug.Log(ex.Message);
+            // Debug.LogException(ex);
             return ex.Message;
         }
         catch (RequestFailedException ex)
         {
             // Compare error code to CommonErrorCodes
             // Notify the player with the proper error message
-            Debug.Log("Hello");
-            Debug.LogException(ex);
+            // Debug.LogException(ex);
             return ex.Message;
         }
         return "";
     }
 
+    //Logs in for the user using the username and password parameters
     public async Task<string> SignInWithUsernamePasswordAsync(string username, string password)
     {
         try
@@ -102,42 +99,18 @@ public class CloudSaveScript : MonoBehaviour
         {
             // Compare error code to AuthenticationErrorCodes
             // Notify the player with the proper error message
-            Debug.LogException(ex);
+            //Debug.LogException(ex);
             return ex.Message;
         }
         catch (RequestFailedException ex)
         {
             // Compare error code to CommonErrorCodes
             // Notify the player with the proper error message
-            Debug.LogException(ex);
+            //Debug.LogException(ex);
             return ex.Message;
         }
         return "";
     }
-
-    public async Task AddUsernamePasswordAsync(string username, string password)
-    {
-        try
-        {
-            await AuthenticationService.Instance.AddUsernamePasswordAsync(username, password);
-            await AuthenticationService.Instance.UpdatePlayerNameAsync(username);
-            Debug.Log("Username and password added.");
-        }
-        catch (AuthenticationException ex)
-        {
-            // Compare error code to AuthenticationErrorCodes
-            // Notify the player with the proper error message
-            Debug.LogException(ex);
-        }
-        catch (RequestFailedException ex)
-        {
-            // Compare error code to CommonErrorCodes
-            // Notify the player with the proper error message
-            Debug.LogException(ex);
-        }
-    }
-
-
 
     //-------------------------------------------------Data Manipulation Methods--------------------------------------------------------------
     public object GetValue(string keyName){
@@ -164,6 +137,7 @@ public class CloudSaveScript : MonoBehaviour
     }
 
     public async Task<bool> SaveGame(){
+        Debug.Log("Saving");
         try{
             await CloudSaveService.Instance.Data.Player.SaveAsync(data);
             return true;
@@ -172,8 +146,14 @@ public class CloudSaveScript : MonoBehaviour
             return false;
         }
     }
-
+    
+    public void ClearData(){
+        data = new Dictionary<string, object>();
+    }
     public async Task LoadData(){
+        //Clears any pre-existing data for the case of Guest --> Login
+        //Login data should completely override any guest data.
+        //ClearData();
         //Retrieves a current set of all data values currently stored
         //Using var because I don't know how/what to save these returned values as.
         var currentKeys = await CloudSaveService.Instance.Data.Player.ListAllKeysAsync();
@@ -189,6 +169,7 @@ public class CloudSaveScript : MonoBehaviour
             this.data.Add(key,data1[key].Value.GetAs<string>());
         }
         dataLoaded = true;
+        ManualSave();
     }
 
     //These warnings described potential issues with not using the await keyword for SaveGame();
@@ -224,7 +205,13 @@ public class CloudSaveScript : MonoBehaviour
         return successfulLogin;
     }
 
+    public void SetDataLoaded(bool data){
+        dataLoaded = data;
+    }
 
+    public void SetSuccessfulLogin(bool login){
+        successfulLogin = login;
+    }
     //------------------Leader Board Code---------------------------
     public async Task LeaderboardAddScore(/*string username,*/ double time)
     {

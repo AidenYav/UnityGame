@@ -18,7 +18,7 @@ public class CurrencyManager : MonoBehaviour
     {
         saveScript = GameObject.Find("DataManager").GetComponent<CloudSaveScript>();
         
-        StartCoroutine(CheckForData());
+        //StartCoroutine(CheckForData());
         //playerCash = 0; //Default is 0. Will change once a save system is implemented.
     }
 
@@ -32,7 +32,7 @@ public class CurrencyManager : MonoBehaviour
             playerCash = int.Parse(saveScript.GetValue("Cash").ToString());
         }
         Debug.Log("Value initialized at: "+playerCash);
-        StartCoroutine(MoneyCounterAnimation(0,playerCash));
+        cashCount.text = "Cash: $" + playerCash;
     }
 
 
@@ -60,5 +60,7 @@ public class CurrencyManager : MonoBehaviour
         return playerCash;
     }
 
-
+    public void ResyncCashData(){
+        StartCoroutine(CheckForData());
+    }
 }

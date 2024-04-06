@@ -24,9 +24,9 @@ public class Puzzle : MonoBehaviour
     private IEnumerator timer; //Timer Object for each puzzle
     void Start()
     {
-        start = GetChildrenByName("StartPoint");
-        end = GetChildrenByName("EndPoint");
-        obsticles = GetChildrenByName("ObsticleObjects");
+        start = transform.Find("StartPoint").gameObject;
+        end = transform.Find("EndPoint").gameObject;
+        obsticles = transform.Find("ObsticleObjects").gameObject;
         initialObsticlePosition = new Vector3[obsticles.transform.childCount];
         initializeObsticles();
 
@@ -37,7 +37,7 @@ public class Puzzle : MonoBehaviour
 
         time = 0;
         timerUI = uiScript.timer.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
-        resultUI = uiScript.minigameResult.transform.GetChild(0).transform.GetChild(1).GetComponent<TextMeshProUGUI>();
+        resultUI = uiScript.minigameResult.transform.Find("Backboard/ResultText").GetComponent<TextMeshProUGUI>();
     }
 
     public IEnumerator UpdateTimer(){
@@ -60,15 +60,6 @@ public class Puzzle : MonoBehaviour
         return String.Format("{0}:{1:d2}:{2:d2}",min,sec,centSec);
     }
 
-    public GameObject GetChildrenByName(string name){
-        for(int i=0; i<transform.childCount; i++){
-            if (String.Equals(this.gameObject.transform.GetChild(i).name,name)){
-                return this.gameObject.transform.GetChild(i).gameObject;
-            }
-        }
-        Debug.Log("Unable to find child object by name: "+ name);
-        return null;
-    }
     #pragma warning disable CS4014
     public void ReachedEnd(){
         //Activate the congradulations Screen
