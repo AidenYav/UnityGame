@@ -296,9 +296,12 @@ public class UI_Manager : MonoBehaviour
         Deactivate(cashCount);
         LeaderboardScoresPage page = await saveScript.GetScores();
         //Fill in the names and scores into the texts
-        for(int i=0; i<page.Total; i++){
-            leaderNames[i].text = (i+1) + ". " + page.Results[i].PlayerName.Substring(0,page.Results[i].PlayerName.Length-5);
-            leaderScores[i].text =  page.Results[i].Score.ToString() + " Seconds";
+        for(int i=0; i<page.Total; i++){ //Page total should always be 5 or less
+            //Extra text effect to identify players on the leaderboard
+            string playerIdentifier = page.Results[i].PlayerId.ToString() == saveScript.GetPlayerId() ? "<color=\"green\">" : "";
+            //Update the leaderboard
+            leaderNames[i].text = (i+1) + ". " + playerIdentifier + page.Results[i].PlayerName.Substring(0,page.Results[i].PlayerName.Length-5);
+            leaderScores[i].text = playerIdentifier + page.Results[i].Score.ToString() + " Seconds";
         }
         //Remove extra text boxes
         for(int i=page.Total; i<leaderNames.Count; i++){
@@ -327,10 +330,12 @@ public class UI_Manager : MonoBehaviour
         }
         if (saveScript.GetSuccessfulLogin()){
             Activate(menu.transform.Find("Save").gameObject);
+            Activate(menu.transform.Find("Leaderboard").gameObject);
             menu.transform.Find("Login_SignUp/Text").GetComponent<TextMeshProUGUI>().text = "Sign Out";
         }
         else{
             Deactivate(menu.transform.Find("Save").gameObject);
+            Deactivate(menu.transform.Find("Leaderboard").gameObject);
             menu.transform.Find("Login_SignUp/Text").GetComponent<TextMeshProUGUI>().text = "Login/Sign Up";
         }
     }

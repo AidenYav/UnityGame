@@ -18,10 +18,12 @@ public class Puzzle : MonoBehaviour
     private PuzzleManager puzzleScript;
     private CloudSaveScript saveScript;
     private TextMeshProUGUI timerUI, resultUI;
-    [SerializeField] private double time; //Serialized for monitoring purposes
+     private double time;
     private GameObject obsticles;
     private Vector3[] initialObsticlePosition;
     private IEnumerator timer; //Timer Object for each puzzle
+
+    [SerializeField] public double puzzleCashMultiplier, puzzleTimeLimit;
     void Start()
     {
         start = transform.Find("StartPoint").gameObject;
@@ -61,24 +63,30 @@ public class Puzzle : MonoBehaviour
     }
 
     #pragma warning disable CS4014
+    //Activate the congratulations Screen
     public void ReachedEnd(){
-        //Activate the congradulations Screen
-        
         if (timer != null){
-            StopTimer();
-        
+            StopTimer(); //Stops timer
+
+            //Activates the UI for 
             uiScript.MinigameEnd();
-            string result = time < 60 ? "Success" : "Failed";
-            
+            //If the player can complete the puzzle under the specified time, they succeed.
+            string result = time < puzzleTimeLimit ? "Success" : "Failed";
+
+            //Personal Best Logic
             double personalBest = time;//Default best is the current time
             //But reassign if the best time is not null
             if(saveScript.GetValue("BestTime") != null){
+                Debug.Log("BestTime reassigning personalBest");
                 personalBest = double.Parse(saveScript.GetValue("BestTime").ToString());
+                Debug.Log(personalBest);
+            }else{
+                Debug.Log("BestTime Does Not Exist.");
             }
             //If the new time is better than the previous personal best, update the data base.
             //While this if statement is slightly redundant, it can be used in the future to
             //Create some sort of bonus effect when achieving a new personal best.
-            if(personalBest <= time){
+            if(time <= personalBest){
                 personalBest = time;
                 //Truncating the data to reduce the number of bytes used when saving data.
                 saveScript.AddValue("BestTime", Math.Floor(personalBest * 100)/100 );
@@ -90,7 +98,7 @@ public class Puzzle : MonoBehaviour
             }
 
 
-            int earnings = (int) Math.Floor(1000/time);
+            int earnings = (int) (Math.Floor(1000/time)*puzzleCashMultiplier);
             resultUI.text = String.Format("Result: {0}\nPersonal Best: {1} \nTime: {2} \nEarnings: {3:C}", result, FormatTime(personalBest), FormatTime(time), earnings);
             currencyScript.ChangeMoney(earnings);
         }   

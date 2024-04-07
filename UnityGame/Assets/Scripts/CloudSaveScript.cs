@@ -38,6 +38,8 @@ public class CloudSaveScript : MonoBehaviour
 
     //--------------------------------------------Authenticator Sign In/Up----------------------------------------------------------------
 
+
+
     //SignOut will clear any current player data AND
     //Will sign out of the authenticator so the player can properly sign up/login
     public void SignOut(){
@@ -63,7 +65,7 @@ public class CloudSaveScript : MonoBehaviour
             ManualSave();
             //If the player has a best time, add it to the leaderboard now that the player has an account
             if(GetValue("BestTime") != null){
-                LeaderboardAddScore(double.Parse(GetValue("BestTime").ToString()));
+                await LeaderboardAddScore(double.Parse(GetValue("BestTime").ToString()));
             }
         }
         catch (AuthenticationException ex)
@@ -136,6 +138,7 @@ public class CloudSaveScript : MonoBehaviour
         
     }
 
+    //Saves the player's data
     public async Task<bool> SaveGame(){
         Debug.Log("Saving");
         try{
@@ -147,9 +150,11 @@ public class CloudSaveScript : MonoBehaviour
         }
     }
     
+    //Clears all data in the dictionary
     public void ClearData(){
         data = new Dictionary<string, object>();
     }
+
     public async Task LoadData(){
         //Clears any pre-existing data for the case of Guest --> Login
         //Login data should completely override any guest data.
@@ -212,39 +217,30 @@ public class CloudSaveScript : MonoBehaviour
     public void SetSuccessfulLogin(bool login){
         successfulLogin = login;
     }
+
+    public string GetPlayerId(){
+        if (successfulLogin){
+            return AuthenticationService.Instance.PlayerId.ToString();
+        }
+        return "";
+    }
     //------------------Leader Board Code---------------------------
-    public async Task LeaderboardAddScore(/*string username,*/ double time)
+    //Adds the player's best time to the leaderboard
+    public async Task LeaderboardAddScore(double time)
     {
-        //var metadata = new Dictionary<string, string>() { {"Username", username} };
         var playerEntry = await LeaderboardsService.Instance
             .AddPlayerScoreAsync(
                 LEADERBOARD_ID,
-                time/*,
-                new AddPlayerScoreOptions { Metadata = metadata}*/);
-        //Debug.Log(JsonConvert.SerializeObject(playerEntry));
-
-    }
-    public async Task LeaderboardGetPlayerScore()
-    {
-        var scoreResponse = await LeaderboardsService.Instance
-            .GetPlayerScoreAsync(
-                LEADERBOARD_ID/*,
-                new GetPlayerScoreOptions { IncludeMetadata = true }*/);
-        //Debug.Log(JsonConvert.SerializeObject(scoreResponse));
-        //Debug.Log("Testing...\nUsernameMetaData: " + JsonConvert.DeserializeObject<Dictionary<string,string>>(scoreResponse.Metadata)["Username"]);
+                time);
     }
 
+    //Returns a LeaderboardScoresPage object which can be used to 
+    //read through the top 5 leaderboard data.
     public async Task<LeaderboardScoresPage> GetScores()
     {
         var scoresResponse = await LeaderboardsService.Instance
-            .GetScoresAsync(LEADERBOARD_ID);
-        Debug.Log(JsonConvert.SerializeObject(scoresResponse));
-        //https://docs.unity3d.com/Packages/com.unity.services.leaderboards@2.0/api/Unity.Services.Leaderboards.Models.LeaderboardScoresPage.html
-        //https://docs.unity3d.com/Packages/com.unity.services.leaderboards@2.0/api/Unity.Services.Leaderboards.Models.LeaderboardScoresPage.Results.html
-        //Debug.Log(scoresResponse.GetType());
-        //scoresResponse.Results --> List<LeaderboardEntry>
-        //LeaderboardEntry.PlayerName
-        //LeaderboardEntry.Score
+            .GetScoresAsync(LEADERBOARD_ID,
+            new GetScoresOptions{Limit = 5});
         return scoresResponse;
         
     }
