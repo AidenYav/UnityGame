@@ -15,6 +15,8 @@ public class UI_Manager : MonoBehaviour
                         minigameResult, help, timer, cashCount;
 
     public GameObject signUp, loginChoices, leaderboardPage;
+
+    public TMP_FontAsset font;
     private TransitionScript transitionScript;
     private GameObject player;
     private PuzzleManager puzzleScript;
@@ -38,10 +40,28 @@ public class UI_Manager : MonoBehaviour
         currencyScript = GameObject.Find("CurrencyManager").GetComponent<CurrencyManager>();
         player = GameObject.Find("Player");
         moveScript = player.GetComponent<Movement_2D>();
+        SetAllFont(this.transform, font);
+
         Activate(startScreen);
         
         foreach (Transform child in leaderboardPage.transform.GetChild(0)) leaderNames.Add(child.gameObject.GetComponent<TextMeshProUGUI>());
         foreach (Transform child in leaderboardPage.transform.GetChild(1)) leaderScores.Add(child.gameObject.GetComponent<TextMeshProUGUI>());
+    }
+
+    //Sets all UI elements to a uniform font.
+    //@parent - This and all it's children will use the new font
+    //@newFont - The font asset file which is inputted in editor on the Canvas Object
+    private void SetAllFont(Transform parent,TMP_FontAsset newFont){
+        for(int i = 0; i<parent.childCount; i++){
+            //Debug.Log(parent.GetChild(i));
+            //Recursively loops through the hiearchy
+            SetAllFont(parent.GetChild(i),newFont);
+        }
+        //If the object is a TMP text box, set the new font
+        var tmp = parent.GetComponent<TextMeshProUGUI>();
+        if (tmp != null){
+            tmp.font = newFont;
+        }
     }
 
     //This is really bad that there are a ton of keyboard checks scatter through the scripts
