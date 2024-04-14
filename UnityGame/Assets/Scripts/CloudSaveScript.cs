@@ -18,6 +18,7 @@ public class CloudSaveScript : MonoBehaviour
     private bool dataLoaded = false, successfulLogin = false;
 
     //Leaderboard ID, DO NOT CHANGE. This is an ID retrieved from the unity dashboard used to access Unity's leaderboard services
+    //Will change when revamping Leaderboard system.
     private const string LEADERBOARD_ID = "Fastest_Times";
 
     // Start is called before the first frame update
@@ -63,7 +64,7 @@ public class CloudSaveScript : MonoBehaviour
             ManualSave();
             //If the player has a best time, add it to the leaderboard now that the player has an account
             if(GetValue("BestTime") != null){
-                LeaderboardAddScore(double.Parse(GetValue("BestTime").ToString()));
+                await LeaderboardAddScore(double.Parse(GetValue("BestTime").ToString()));
             }
         }
         catch (AuthenticationException ex)

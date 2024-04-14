@@ -13,11 +13,16 @@ public class PuzzleManager : MonoBehaviour
 
     public GameObject[] puzzles;
 
-   
-     [SerializeField] private GameObject currentPuzzle;
+    public GameObject[] multiplayerPuzzles;
+
+    //The current puzzle will be recorded using an index, to easily increment puzzles in an accending order.
+    [SerializeField] private int currentPuzzle; 
 
     private UI_Manager uiScript;
     private bool inPuzzle;
+
+    private bool multiplayerActive;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -33,35 +38,60 @@ public class PuzzleManager : MonoBehaviour
         } 
     }
 
+
+
+    //Restarts the puzzle
     public void RestartPuzzle(){
-        Puzzle puzScript = currentPuzzle.GetComponent<Puzzle>();
+        Puzzle puzScript = puzzles[currentPuzzle].GetComponent<Puzzle>();
         puzScript.StopTimer();
         puzScript.ResetObsticles();
         uiScript.MinigameStop();
         uiScript.PlayMinigameAgain();
     }
 
+    //------------------------------------Puzzle Selection Methods---------------------------------------
+    public GameObject IncrementPuzzle(){
+        currentPuzzle++;//Incraments the puzzle index
+        //This prevents an out-of-bounds error, by ensuring the index is always within range
+        if(currentPuzzle >= puzzles.Length){
+            currentPuzzle = 0;
+        }
+        return puzzles[currentPuzzle];
+    }
+
+    public GameObject SetPuzzle(int idx){
+        currentPuzzle = idx;
+        //This prevents an out-of-bounds error, by ensuring the index is always within range
+        if(currentPuzzle >= puzzles.Length){
+            currentPuzzle = 0;
+        }
+        return puzzles[currentPuzzle];
+    }
     //Randomly selects a pre-built puzzle to use
     public GameObject RandomizePuzzle(){
-        currentPuzzle = puzzles[Random.Range(0,puzzles.Length)];
-        return currentPuzzle;
+        return puzzles[Random.Range(0,puzzles.Length)];
     }
 
     //This ensures that the previous puzzle is not selected again
-    public GameObject RandomizePuzzle(GameObject prev){
+    public GameObject RandomizePuzzle(int prev){
         //The available puzzle set must contain at least 2 puzzles
         //If that is true, this will continously 
         while (puzzles.Length > 1 && currentPuzzle == prev){
-            currentPuzzle = puzzles[Random.Range(0,puzzles.Length)];
+            currentPuzzle = Random.Range(0,puzzles.Length);
         }
-        return currentPuzzle;
+        return puzzles[currentPuzzle];
     }
 
     //Returns the current puzzle object
     public GameObject GetCurrentPuzzle(){
+        return puzzles[currentPuzzle];
+    }
+
+    public int GetCurrentPuzzleIndex(){
         return currentPuzzle;
     }
 
+    //These are for UI purposes and to enable the player to restart the minigame
     public void SetInPuzzle(bool inPuzzle){
         this.inPuzzle = inPuzzle;
     }
@@ -70,6 +100,7 @@ public class PuzzleManager : MonoBehaviour
         return inPuzzle;
     }
 
+    //This is when the player collides with enterance to the minigame.
     private void OnTriggerEnter2D(Collider2D other){
         if (other.gameObject.tag == "Player"){
             uiScript.PlayMinigameAgain();

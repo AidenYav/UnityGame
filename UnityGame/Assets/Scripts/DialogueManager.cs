@@ -228,6 +228,10 @@ public class DialogueManager : MonoBehaviour
     public void MakeChoice(int choiceIndex){
         currentStory.ChooseChoiceIndex(choiceIndex); //Updates the story to continue accordingly
 
+        //Choices affect reputation system
+        //if(choice == positive) --> reputation + x;
+        //if(choice == negative) --> reputation - x;
+
         //This hides all the choice buttons following the player's decision
         hideChoices(0);
 

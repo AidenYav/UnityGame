@@ -160,7 +160,7 @@ public class UI_Manager : MonoBehaviour
 
     public void PlayMinigameAgain(){
         Deactivate(minigameResult);
-        GameObject newPuzzle = puzzleScript.RandomizePuzzle(puzzleScript.GetCurrentPuzzle());
+        GameObject newPuzzle = puzzleScript.RandomizePuzzle(puzzleScript.GetCurrentPuzzleIndex());
         StartCoroutine(MovePlayer(newPuzzle.transform.GetComponent<Puzzle>().GetStartPosition()));
     }
     #pragma warning disable CS4014
@@ -317,6 +317,7 @@ public class UI_Manager : MonoBehaviour
         LeaderboardScoresPage page = await saveScript.GetScores();
         //Fill in the names and scores into the texts
         for(int i=0; i<page.Total; i++){
+            
             leaderNames[i].text = (i+1) + ". " + page.Results[i].PlayerName.Substring(0,page.Results[i].PlayerName.Length-5);
             leaderScores[i].text =  page.Results[i].Score.ToString() + " Seconds";
         }
