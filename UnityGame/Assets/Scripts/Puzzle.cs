@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.UI;
 
 /* Instance Level script for each puzzle
  * Each puzzle MUST have a start and end point
@@ -157,3 +158,4 @@ public class Puzzle : MonoBehaviour
         }
     }
 }
+
