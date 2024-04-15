@@ -25,7 +25,7 @@ public class Movement_2D : MonoBehaviour
 
     public Animator animator;
 
-    private bool canMove;
+    private static bool canMove;
 
     // Start is called before the first frame update
     void Start()
@@ -67,8 +67,8 @@ public class Movement_2D : MonoBehaviour
 
     }
 
-    public void SetCanMove(bool canMove){
-        this.canMove = canMove;
+    public static void SetCanMove(bool move){
+        canMove = move;
     }
 
         //Old version of changing sprite art

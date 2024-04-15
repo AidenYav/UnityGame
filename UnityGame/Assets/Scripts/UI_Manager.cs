@@ -17,7 +17,7 @@ public class UI_Manager : MonoBehaviour
     public GameObject signUp, loginChoices, leaderboardPage;
 
     public TMP_FontAsset font;
-    private TransitionScript transitionScript;
+    private TransitionScript transitionScript, transitionScript2;
     private GameObject player;
     private PuzzleManager puzzleScript;
 
@@ -35,6 +35,7 @@ public class UI_Manager : MonoBehaviour
     void Start()
     {
         transitionScript = GameObject.Find("Main Camera").GetComponent<TransitionScript>();
+        transitionScript2 = GameObject.Find("Camera2").GetComponent<TransitionScript>(); //Temporary Addition for experimental purposes
         puzzleScript = GameObject.Find("PuzzleManager").GetComponent<PuzzleManager>();
         saveScript = GameObject.Find("DataManager").GetComponent<CloudSaveScript>();
         currencyScript = GameObject.Find("CurrencyManager").GetComponent<CurrencyManager>();
@@ -100,7 +101,8 @@ public class UI_Manager : MonoBehaviour
     private IEnumerator WaitForDataLoading(){
         yield return new WaitUntil(() => saveScript.GetDataLoaded());
         transitionScript.FancyFadeIn();
-        moveScript.SetCanMove(true);
+        transitionScript2.FancyFadeIn();
+        Movement_2D.SetCanMove(true);
     }
 
     public void ClickedCredits(){
@@ -111,13 +113,13 @@ public class UI_Manager : MonoBehaviour
     //Helper function for transitions to move players between locations
     //Without the use of teleportation objects (which may overcomplicate things)
     private IEnumerator MovePlayer(Vector3 pos){
-        player.GetComponent<Movement_2D>().SetCanMove(false);
+        Movement_2D.SetCanMove(false);
         transitionScript.FancyFadeOut();
         yield return new WaitForSeconds(2);
         player.transform.position = pos;
         transitionScript.FancyFadeIn();
         yield return new WaitForSeconds(2);
-        player.GetComponent<Movement_2D>().SetCanMove(true);
+        Movement_2D.SetCanMove(true);
     }
     //-------------------------------------------------UI Functions/Methods-----------------------------------------------------------
     public void ReturnToMenu(){ //This might be changed in the future
@@ -134,7 +136,7 @@ public class UI_Manager : MonoBehaviour
     public void ClickedResume(){
         Deactivate(menu);
         Deactivate(cashCount);
-        moveScript.SetCanMove(true);
+        Movement_2D.SetCanMove(true);
     }
 
     public void MinigameEnd(){
@@ -340,7 +342,7 @@ public class UI_Manager : MonoBehaviour
     public void OpenInGameMenu(){
         Activate(menu);
         Activate(cashCount);
-        moveScript.SetCanMove(false);
+        Movement_2D.SetCanMove(false);
         //If the player is currently in a puzzle, enable the UI button for restarting the puzzle
         if (puzzleScript.GetInPuzzle()){
             Activate(menu.transform.Find("Restart Puzzle").gameObject);

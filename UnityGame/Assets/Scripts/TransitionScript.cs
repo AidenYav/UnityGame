@@ -40,8 +40,8 @@ public class TransitionScript : MonoBehaviour
 
     private void UpdateShader(){
         //Updates Screen width and height
-        horizontal = Screen.width;
-        vertical = Screen.height;
+        horizontal = cam.pixelWidth;
+        vertical = cam.pixelHeight;
         float radiusSpeed = Mathf.Max(horizontal, vertical);
         //Updates shader values
         material.SetFloat("_Radius",radius);
@@ -55,7 +55,7 @@ public class TransitionScript : MonoBehaviour
     private void UpdatePosition(GameObject target){
         Vector3 pos = cam.WorldToScreenPoint(target.transform.position);
         //_PosX and _PosY must be a value between [0,1]
-        material.SetFloat("_PosX",pos.x/horizontal);
+        material.SetFloat("_PosX",( pos.x - cam.pixelRect.x) /horizontal);
         material.SetFloat("_PosY",pos.y/vertical);
     }
     /* Code for a basic linear transition

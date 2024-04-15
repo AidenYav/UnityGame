@@ -31,24 +31,16 @@ public class IdleTycoonScript : MonoBehaviour
         private int level;
         private int baseIncome;
         private int timeIncrament;//Do we want time incraments to be the same? different? TBD
-        private IEnumerator coroutine;
+        //private IEnumerator coroutine;
 
-        //Constructors
-        public TycoonObject(){
-            this("Unknown", 1, 1);
-        }
-
-        public TycoonObject(string name, int baseIncome){
-            this(name, 1, baseIncome);
-        }
-
+        //Constructor
         public TycoonObject(string name, int level, int baseIncome){
             this.name = name;
             this.level = level;
-            this.baseIncome = baseIncome
+            this.baseIncome = baseIncome;
 
             timeIncrament = 10;
-            coroutine = null;
+            //coroutine = null;
         }
 
         //Setter Methods
@@ -61,7 +53,7 @@ public class IdleTycoonScript : MonoBehaviour
         }
 
         public void SetBaseIncome(int baseIncome){
-            this.baseIncome = baseIncome
+            this.baseIncome = baseIncome;
         }
         //Getter Methods
         public string GetName(){
@@ -76,19 +68,19 @@ public class IdleTycoonScript : MonoBehaviour
             return baseIncome;
         }
 
-        public void InitializeTycoon(){
-            if(coroutine != null){
-                StopCoroutine(coroutine);
-            }
-            coroutine = GenerateIncome();
-            StartCoroutine(coroutine);
-        }
+        // public void InitializeTycoon(){
+        //     if(coroutine != null){
+        //         StopCoroutine(coroutine);
+        //     }
+        //     coroutine = GenerateIncome();
+        //     StartCoroutine(coroutine);
+        // }
 
         public int UpgradeCost(){
             return baseIncome * level * level;
         }
 
-        public String Upgrade(){
+        public string Upgrade(){
             //Successfully Upgrade Tycoon
             /*if(MoneyScript.GetMoney() > UpgradeCost()) {
                 MoneyScript.ChangeMoney(-UpgradeCost());
@@ -99,7 +91,7 @@ public class IdleTycoonScript : MonoBehaviour
                 return "<color=red>Insufficient Funds! " + "Requires $" + (UpgradeCost() - MoneyScript.GetMoney()) + "more to upgrade.";
             }
             */
-
+            return "";
         }
         private IEnumerator GenerateIncome(){
             //Should run indefinately, or at least while the player is on the tycoon screen.
