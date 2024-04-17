@@ -13,32 +13,33 @@ public class Movement_2D : MonoBehaviour
     */
     public float moveSpeed = 10;
 
-    //Old variables for recording character direction
-    // enum direction{
-    //     LEFT,
-    //     RIGHT,
-    //     UP,
-    //     DOWN
-    // }
-    //direction playerDirection = direction.DOWN;
-
-
+    public enum PlayerControls { WASD, Arrows }
+    public PlayerControls playerControls = PlayerControls.WASD;
     public Animator animator;
 
     private static bool canMove;
+
+    private static MultiplayerManager multiplayerManager;
 
     // Start is called before the first frame update
     void Start()
     {
         canMove = false;
+        multiplayerManager = GameObject.Find("MultiplayerManager").GetComponent<MultiplayerManager>();
+        if (gameObject.name == "Player"){
+            playerControls = PlayerControls.WASD;
+        }
+        else{
+            playerControls = PlayerControls.Arrows;
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
         //Moves Players in the desired direction on the 2D Plane
-        float horizontal = Input.GetAxis("Horizontal");
-        float vertical = Input.GetAxis("Vertical");
+        int horizontal = GetHorizontal();
+        int vertical = GetVertical();
         Vector2 vector = new Vector2( horizontal , vertical );
         vector.Normalize(); //Prevents players from going faster when moving diagonally
         //If canMove is true, move the playerrrr
@@ -71,31 +72,31 @@ public class Movement_2D : MonoBehaviour
         canMove = move;
     }
 
-        //Old version of changing sprite art
-    // private void changeSpritDirection(direction dir){
-    //     //Colors are placeholders for sprites
-    //     switch (dir){
-    //         //Set sprite facing Left
-    //         case direction.LEFT:
-    //             spriteRender.color = Color.magenta;
-    //             break;
+    private int GetVertical(){
+        if ((playerControls == PlayerControls.WASD && Input.GetKey(KeyCode.W)) ||
+                (playerControls == PlayerControls.Arrows && Input.GetKey(KeyCode.UpArrow)))
+            {
+                return 1;
+            }
+        else if ((playerControls == PlayerControls.WASD && Input.GetKey(KeyCode.S)) ||
+                    (playerControls == PlayerControls.Arrows && Input.GetKey(KeyCode.DownArrow)))
+            {
+                return -1;
+            }
+        return 0;
+    }
 
-    //         //Set sprite facing Right
-    //         case direction.RIGHT:
-    //             spriteRender.color = Color.yellow;
-    //             break;
-
-    //         //Set sprite faicng Up
-    //         case direction.UP:
-    //             spriteRender.color = Color.red;
-    //             break;
-
-    //         //Set Sprite facing Down
-    //         case direction.DOWN:
-    //             spriteRender.color = Color.cyan;
-    //             break;
-    //     }
-    // }
-
-
+    private int GetHorizontal(){
+        if ((playerControls == PlayerControls.WASD && Input.GetKey(KeyCode.D)) ||
+                (playerControls == PlayerControls.Arrows && Input.GetKey(KeyCode.RightArrow)))
+            {
+                return 1;
+            }
+        else if ((playerControls == PlayerControls.WASD && Input.GetKey(KeyCode.A)) ||
+                    (playerControls == PlayerControls.Arrows && Input.GetKey(KeyCode.LeftArrow)))
+            {
+                return -1;
+            }
+        return 0;
+    }
 }
