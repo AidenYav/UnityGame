@@ -13,7 +13,7 @@ public class Puzzle : MonoBehaviour
 {
     // Start is called before the first frame update
 
-    private GameObject start, end;
+    private GameObject[] startAndEndPoints = new GameObject[3]; //Start and End Points
     private UI_Manager uiScript;
     private CurrencyManager currencyScript;
     private PuzzleManager puzzleScript;
@@ -24,11 +24,15 @@ public class Puzzle : MonoBehaviour
     private Vector3[] initialObsticlePosition;
     private IEnumerator timer; //Timer Object for each puzzle
 
-    [SerializeField] public double puzzleCashMultiplier, puzzleTimeLimit;
+    [SerializeField] private double puzzleCashMultiplier, puzzleTimeLimit;
+    [SerializeField] private bool multiplayerCompatible;
     void Start()
     {
-        start = transform.Find("StartPoint").gameObject;
-        end = transform.Find("EndPoint").gameObject;
+        startAndEndPoints[0] = transform.Find("StartPoint").gameObject;
+        startAndEndPoints[1] = transform.Find("EndPoint").gameObject;
+        if(multiplayerCompatible){
+            startAndEndPoints[2] = transform.Find("StartPoint2").gameObject;
+        }
         obsticles = transform.Find("ObsticleObjects").gameObject;
         initialObsticlePosition = new Vector3[obsticles.transform.childCount];
         initializeObsticles();
@@ -119,7 +123,15 @@ public class Puzzle : MonoBehaviour
     }
 
     public Vector3 GetStartPosition(){
-        return start.transform.position;
+        return startAndEndPoints[0].transform.position;
+    }
+
+    public Vector3 GetStartPosition2(){
+        if (multiplayerCompatible){
+            return startAndEndPoints[2].transform.position;
+        }
+        Debug.Log("Position 2 does not exist in puzzle: "+gameObject.name);
+        return new Vector3(0,0,0);
     }
 
     public void ResetObsticles(){
@@ -156,6 +168,10 @@ public class Puzzle : MonoBehaviour
             StopCoroutine(timer);
             timer = null;
         }
+    }
+
+    public bool GetMultiplayerCompatible(){
+        return multiplayerCompatible;
     }
 }
 

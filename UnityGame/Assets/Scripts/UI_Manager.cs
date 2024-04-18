@@ -18,7 +18,8 @@ public class UI_Manager : MonoBehaviour
 
     public TMP_FontAsset font;
     private TransitionScript transitionScript, transitionScript2;
-    private GameObject player;
+    private MultiplayerManager multiplayerManager;
+    private GameObject player, player2;
     private PuzzleManager puzzleScript;
 
     private CloudSaveScript saveScript;
@@ -35,11 +36,13 @@ public class UI_Manager : MonoBehaviour
     void Start()
     {
         transitionScript = GameObject.Find("Main Camera").GetComponent<TransitionScript>();
-        transitionScript2 = GameObject.Find("Camera2").GetComponent<TransitionScript>(); //Temporary Addition for experimental purposes
+        transitionScript2 = GameObject.Find("Camera2").GetComponent<TransitionScript>();
+        multiplayerManager = GameObject.Find("MultiplayerManager").GetComponent<MultiplayerManager>();
         puzzleScript = GameObject.Find("PuzzleManager").GetComponent<PuzzleManager>();
         saveScript = GameObject.Find("DataManager").GetComponent<CloudSaveScript>();
         currencyScript = GameObject.Find("CurrencyManager").GetComponent<CurrencyManager>();
         player = GameObject.Find("Player");
+        player2 = GameObject.Find("Player2");
         moveScript = player.GetComponent<Movement_2D>();
         SetAllFont(this.transform, font);
 
@@ -101,7 +104,6 @@ public class UI_Manager : MonoBehaviour
     private IEnumerator WaitForDataLoading(){
         yield return new WaitUntil(() => saveScript.GetDataLoaded());
         transitionScript.FancyFadeIn();
-        transitionScript2.FancyFadeIn();
         Movement_2D.SetCanMove(true);
     }
 
@@ -112,13 +114,37 @@ public class UI_Manager : MonoBehaviour
 
     //Helper function for transitions to move players between locations
     //Without the use of teleportation objects (which may overcomplicate things)
-    private IEnumerator MovePlayer(Vector3 pos){
-        Movement_2D.SetCanMove(false);
+    //leavePuzzle = player is going from puzzle to open world
+    //!leavePuzzle = player is going from open world to puzzle = enterPuzzle
+    private IEnumerator MovePlayer(Vector3 pos1, Vector3 pos2, bool leavePuzzle){
+        Movement_2D.SetCanMove(false); //Deactivate all movement
+        
+        //If the player has multiplayer on AMD is trying to leave the puzzle (implying they are currently in the puzzle),
+        //Then fade both characters out before moving player 1 and deactivating player 2
         transitionScript.FancyFadeOut();
-        yield return new WaitForSeconds(2);
-        player.transform.position = pos;
+        if(multiplayerManager.GetIsMultiplayerActivated() && leavePuzzle){
+            //Assumes Camera2 and Player2 are activated
+            transitionScript2.FancyFadeOut();
+            yield return new WaitForSeconds(2);//Wait for the transition to complete
+            multiplayerManager.DeactivateMultiplayer(); //Deactivate multiplayer
+        }else{
+            yield return new WaitForSeconds(2);
+        }
+
+        player.transform.position = pos1;
+        
+        if (multiplayerManager.GetIsMultiplayerActivated() && !leavePuzzle){
+            player2.transform.position = pos2;
+        }
         transitionScript.FancyFadeIn();
-        yield return new WaitForSeconds(2);
+        if(multiplayerManager.GetIsMultiplayerActivated() && !leavePuzzle){
+            multiplayerManager.ActivateMultiplayer();
+            //yield return new WaitForSeconds(2);
+            transitionScript2.FancyFadeIn();
+        }
+        else{
+            yield return new WaitForSeconds(2);
+        }
         Movement_2D.SetCanMove(true);
     }
     //-------------------------------------------------UI Functions/Methods-----------------------------------------------------------
@@ -156,14 +182,15 @@ public class UI_Manager : MonoBehaviour
     public void LeaveMiniGame(){
         Deactivate(minigameResult);
         puzzleScript.SetInPuzzle(false);
+        puzzleScript.GetCurrentPuzzle().GetComponent<Puzzle>().ResetObsticles();
         //Should place them outside of the building/tavern or something? not sure where we should place them yet.
-        StartCoroutine(MovePlayer(new Vector3(0,0,0)));
+        StartCoroutine(MovePlayer(new Vector3(0,0,0), new Vector3(0,0,0), true));
     }
 
     public void PlayMinigameAgain(){
         Deactivate(minigameResult);
-        GameObject newPuzzle = puzzleScript.RandomizePuzzle(puzzleScript.GetCurrentPuzzleIndex());
-        StartCoroutine(MovePlayer(newPuzzle.transform.GetComponent<Puzzle>().GetStartPosition()));
+        GameObject newPuzzle = puzzleScript.RandomizePuzzle(/*puzzleScript.GetCurrentPuzzleIndex()*/);
+        StartCoroutine(MovePlayer(newPuzzle.transform.GetComponent<Puzzle>().GetStartPosition(), newPuzzle.transform.GetComponent<Puzzle>().GetStartPosition2(), false));
     }
     #pragma warning disable CS4014
     public async void CreateAccount(){

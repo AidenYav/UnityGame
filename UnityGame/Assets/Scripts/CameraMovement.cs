@@ -6,7 +6,7 @@ public class CameraMovement : MonoBehaviour
 {
     public GameObject player;
 
-    public float timeToLockOn; //Once the player stops moving, this is how long it will take the camera to center the player onto the screen
+    private float timeToLockOn; //Once the player stops moving, this is how long it will take the camera to center the player onto the screen
 
     public Vector2 initialVel, accel;
 
@@ -14,7 +14,7 @@ public class CameraMovement : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        timeToLockOn = 1.0f;
+        timeToLockOn = 0.75f;
 
     }
 

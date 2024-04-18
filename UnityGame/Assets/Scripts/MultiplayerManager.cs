@@ -11,6 +11,8 @@ public class MultiplayerManager : MonoBehaviour
 
     private GameObject multiplayerBoarder;
 
+    private PuzzleManager puzzleManagerScript;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -18,12 +20,23 @@ public class MultiplayerManager : MonoBehaviour
         cam2 = GameObject.Find("Camera2").GetComponent<Camera>();
         player2 = GameObject.Find("Player2");
         multiplayerBoarder = GameObject.Find("Canvas").transform.Find("MultiplayerUI").gameObject;
+        puzzleManagerScript = GameObject.Find("PuzzleManager").GetComponent<PuzzleManager>();
     }
 
     // Update is called once per frame
 
+    public void MultiplayerToggle(){
+        if(!isMultiplayerActivated){
+            isMultiplayerActivated = true;
+        }
+        else{
+            isMultiplayerActivated = false;
+        }
+        puzzleManagerScript.SetPuzzleType();
+    }
+
+    //Activates Multiplayer Visual Effects
     public void ActivateMultiplayer(){
-        isMultiplayerActivated = true;
         //Activate the second player
         player2.SetActive(true);
         //Set Main Camera (cam1) to be split screen with:
@@ -35,8 +48,9 @@ public class MultiplayerManager : MonoBehaviour
         multiplayerBoarder.SetActive(true);
     }
 
+
+    //Deactivates Multiplayer Visual Effects
     public void DeactivateMultiplayer(){
-        isMultiplayerActivated = false;
         //Deactivate the second player
         player2.SetActive(false);
         //Set Main Camera (cam1) to disable split screen with:

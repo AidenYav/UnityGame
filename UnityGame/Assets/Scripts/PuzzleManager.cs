@@ -11,14 +11,16 @@ using Random = UnityEngine.Random;
 public class PuzzleManager : MonoBehaviour
 {
 
-    public GameObject[] puzzles;
-
+    private GameObject[] puzzles;
+    public GameObject[] singlePlayerPuzzles;
     public GameObject[] multiplayerPuzzles;
 
     //The current puzzle will be recorded using an index, to easily increment puzzles in an accending order.
     [SerializeField] private int currentPuzzle; 
 
     private UI_Manager uiScript;
+
+    private MultiplayerManager multiplayerScript;
     private bool inPuzzle;
 
     private bool multiplayerActive;
@@ -27,6 +29,8 @@ public class PuzzleManager : MonoBehaviour
     void Start()
     {
         uiScript = GameObject.Find("Canvas").GetComponent<UI_Manager>();
+        multiplayerScript = GameObject.Find("MultiplayerManager").GetComponent<MultiplayerManager>();
+        SetPuzzleType();
         RandomizePuzzle();
     }
 
@@ -38,7 +42,11 @@ public class PuzzleManager : MonoBehaviour
         } 
     }
 
-
+    public void SetPuzzleType(){
+        //If multiplayer is activated, load multiplayer puzzles
+        //Otherwise load single player puzzles
+        puzzles = multiplayerScript.GetIsMultiplayerActivated() ? multiplayerPuzzles : singlePlayerPuzzles;
+    }
 
     //Restarts the puzzle
     public void RestartPuzzle(){
