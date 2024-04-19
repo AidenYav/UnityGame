@@ -190,7 +190,7 @@ public class UI_Manager : MonoBehaviour
         //These variables are less efficient, however this makes it easier to read the code
         Vector3 pos1 = newPuzzle.transform.GetComponent<Puzzle>().GetStartPosition();
 
-        Vector3 pos2 = multiplayerManager.GetMultiplayerCompatible ? newPuzzle.transform.GetComponent<Puzzle>().GetStartPosition2() : new Vector3(0,0,0);
+        Vector3 pos2 = multiplayerManager.GetIsMultiplayerActivated() ? newPuzzle.transform.GetComponent<Puzzle>().GetStartPosition2() : new Vector3(0,0,0);
         
         StartCoroutine(MovePlayer(pos1, pos2, false));
     }
