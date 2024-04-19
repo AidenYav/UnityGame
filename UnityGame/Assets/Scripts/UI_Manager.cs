@@ -318,15 +318,15 @@ public class UI_Manager : MonoBehaviour
         if (choice == 0){
             Activate(signUp);
             //Retrieves the button under the sign-up page to set as "Sign In"
-            signUp.transform.GetChild(4).GetChild(0).gameObject.GetComponent<TextMeshProUGUI>().text = "Sign In";
-            Deactivate(signUp.transform.GetChild(2).gameObject);
+            signUp.transform.Find("CreateAccount/Wood/Button Container/Button/Text").gameObject.GetComponent<TextMeshProUGUI>().text = "Sign In";
+            Deactivate(signUp.transform.Find("Password2").gameObject);
             signingUp = false;
         }
         else if(choice == 1){
             Activate(signUp);
             //Retrieves the button under the sign-up page to set as "Create Account!"
-            signUp.transform.GetChild(4).GetChild(0).gameObject.GetComponent<TextMeshProUGUI>().text = "Create Account!";
-            Activate(signUp.transform.GetChild(2).gameObject);
+            signUp.transform.Find("CreateAccount/Wood/Button Container/Button/Text").gameObject.GetComponent<TextMeshProUGUI>().text = "Create Account!";
+            Activate(signUp.transform.Find("Password2").gameObject);
             signingUp = true;
         }
         else{
@@ -337,6 +337,7 @@ public class UI_Manager : MonoBehaviour
         }
         currencyScript.ResyncCashData();
         Deactivate(loginChoices);
+        Deactivate(transitionScript2.gameObject);
     }
 
     public async void LoadLeaderBoard(){
