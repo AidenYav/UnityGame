@@ -24,8 +24,6 @@ public class UI_Manager : MonoBehaviour
 
     private CloudSaveScript saveScript;
 
-    private Movement_2D moveScript;
-
     private CurrencyManager currencyScript;
 
     private bool signingUp = false;//False for login procedure, true for sign in procedure
@@ -37,13 +35,12 @@ public class UI_Manager : MonoBehaviour
     {
         transitionScript = GameObject.Find("Main Camera").GetComponent<TransitionScript>();
         transitionScript2 = GameObject.Find("Camera2").GetComponent<TransitionScript>();
-        multiplayerManager = GameObject.Find("MultiplayerManager").GetComponent<MultiplayerManager>();
+        multiplayerManager = GameObject.Find("GameManager").GetComponent<MultiplayerManager>();
         puzzleScript = GameObject.Find("PuzzleManager").GetComponent<PuzzleManager>();
-        saveScript = GameObject.Find("DataManager").GetComponent<CloudSaveScript>();
-        currencyScript = GameObject.Find("CurrencyManager").GetComponent<CurrencyManager>();
+        saveScript = GameObject.Find("GameManager").GetComponent<CloudSaveScript>();
+        currencyScript = GameObject.Find("GameManager").GetComponent<CurrencyManager>();
         player = GameObject.Find("Player");
         player2 = GameObject.Find("Player2");
-        moveScript = player.GetComponent<Movement_2D>();
         SetAllFont(this.transform, font);
 
         Activate(startScreen);
@@ -190,7 +187,12 @@ public class UI_Manager : MonoBehaviour
     public void PlayMinigameAgain(){
         Deactivate(minigameResult);
         GameObject newPuzzle = puzzleScript.RandomizePuzzle(/*puzzleScript.GetCurrentPuzzleIndex()*/);
-        StartCoroutine(MovePlayer(newPuzzle.transform.GetComponent<Puzzle>().GetStartPosition(), newPuzzle.transform.GetComponent<Puzzle>().GetStartPosition2(), false));
+        //These variables are less efficient, however this makes it easier to read the code
+        Vector3 pos1 = newPuzzle.transform.GetComponent<Puzzle>().GetStartPosition();
+
+        Vector3 pos2 = multiplayerManager.GetMultiplayerCompatible ? newPuzzle.transform.GetComponent<Puzzle>().GetStartPosition2() : new Vector3(0,0,0);
+        
+        StartCoroutine(MovePlayer(pos1, pos2, false));
     }
     #pragma warning disable CS4014
     public async void CreateAccount(){
@@ -242,6 +244,10 @@ public class UI_Manager : MonoBehaviour
     }
 
     //Helper methods because username/password debugging has so many restrictions
+
+    //Accepts the submitted username, password, and the password confirmation
+    //Ensures that account details fit specific criteria regarding account creation
+    //And returns a string of error messages of what the player can/cannot do.
     private string SignUpErrors(string username, string password1, string password2){
         string errors = "";
         if(username.Length<3)               errors += "Username must have at least 3 characters\n";
@@ -255,6 +261,7 @@ public class UI_Manager : MonoBehaviour
         return errors;
     }
 
+    //Checks that the string contains an uppercase character
     private bool ContainsUppercase(string s){
         foreach(char c in s){
             if(Char.IsUpper(c)){
@@ -264,6 +271,7 @@ public class UI_Manager : MonoBehaviour
         return false;
     }
 
+    //Checks that the string contains an lowercase character
     private bool ContainsLowercase(string s){
         foreach(char c in s){
             if(Char.IsLower(c)){
@@ -273,6 +281,7 @@ public class UI_Manager : MonoBehaviour
         return false;
     }
 
+    ///Checks that the string contains an numerical digit
     private bool ContainsDigit(string s){
         foreach(char c in s){
             if(Char.IsDigit(c)){
@@ -281,6 +290,8 @@ public class UI_Manager : MonoBehaviour
         }
         return false;
     }
+
+    //Checks that the string contains a symbol character
     private bool ContainsSpecialChar(string s){
         foreach(char c in s){
             if(!Char.IsLetterOrDigit(c)){
@@ -337,7 +348,8 @@ public class UI_Manager : MonoBehaviour
         }
         currencyScript.ResyncCashData();
         Deactivate(loginChoices);
-        Deactivate(transitionScript2.gameObject);
+        Deactivate(transitionScript2.gameObject); //Cam2 was activated by default so the object could be properly initalized, but it needs to be deactivated before loading in the game
+        Deactivate(player2); //Player 2 should always be deactivated when starting the game since multiplayer won't be activated
     }
 
     public async void LoadLeaderBoard(){
@@ -378,12 +390,16 @@ public class UI_Manager : MonoBehaviour
         else{
             Deactivate(menu.transform.Find("Restart Puzzle").gameObject);
         }
+        //If the player is logged in (and connected to unity services)
         if (saveScript.GetSuccessfulLogin()){
+            //Enable their options to view leaderboards and save the game
             Activate(menu.transform.Find("Save").gameObject);
             Activate(menu.transform.Find("Leaderboard").gameObject);
             menu.transform.Find("Login_SignUp/Text").GetComponent<TextMeshProUGUI>().text = "Sign Out";
         }
+        //Otherwise, if they are not logged in
         else{
+            //Disable their ability to save or view leaderboard (since these require a connection to unity services)
             Deactivate(menu.transform.Find("Save").gameObject);
             Deactivate(menu.transform.Find("Leaderboard").gameObject);
             menu.transform.Find("Login_SignUp/Text").GetComponent<TextMeshProUGUI>().text = "Login/Sign Up";

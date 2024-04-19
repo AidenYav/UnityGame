@@ -17,7 +17,7 @@ public class MovableObstacle : MonoBehaviour
     void Start()
     {
         pushDistance = 1.5f;
-        interactionScript = GameObject.Find("InteractionManager").GetComponent<PlayerInteraction>();
+        interactionScript = GameObject.Find("GameManager").GetComponent<PlayerInteraction>();
         rigidBody = this.GetComponentInParent<Rigidbody2D>();
     }
 

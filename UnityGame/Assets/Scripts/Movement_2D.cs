@@ -25,7 +25,7 @@ public class Movement_2D : MonoBehaviour
     void Start()
     {
         canMove = false;
-        multiplayerManager = GameObject.Find("MultiplayerManager").GetComponent<MultiplayerManager>();
+        multiplayerManager = GameObject.Find("GameManager").GetComponent<MultiplayerManager>();
         if (gameObject.name == "Player"){
             playerControls = PlayerControls.WASD;
         }

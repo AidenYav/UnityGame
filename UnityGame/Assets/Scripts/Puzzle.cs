@@ -38,9 +38,9 @@ public class Puzzle : MonoBehaviour
         initializeObsticles();
 
         uiScript = GameObject.Find("Canvas").GetComponent<UI_Manager>();
-        currencyScript = GameObject.Find("CurrencyManager").GetComponent<CurrencyManager>();
+        currencyScript = GameObject.Find("GameManager").GetComponent<CurrencyManager>();
         puzzleScript = GameObject.Find("PuzzleManager").GetComponent<PuzzleManager>();
-        saveScript = GameObject.Find("DataManager").GetComponent<CloudSaveScript>();
+        saveScript = GameObject.Find("GameManager").GetComponent<CloudSaveScript>();
 
         time = 0;
         timerUI = uiScript.timer.transform.GetChild(0).GetComponent<TextMeshProUGUI>();

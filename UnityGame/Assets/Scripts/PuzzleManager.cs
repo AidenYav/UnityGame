@@ -29,7 +29,7 @@ public class PuzzleManager : MonoBehaviour
     void Start()
     {
         uiScript = GameObject.Find("Canvas").GetComponent<UI_Manager>();
-        multiplayerScript = GameObject.Find("MultiplayerManager").GetComponent<MultiplayerManager>();
+        multiplayerScript = GameObject.Find("GameManager").GetComponent<MultiplayerManager>();
         SetPuzzleType();
         RandomizePuzzle();
     }

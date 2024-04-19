@@ -19,7 +19,7 @@ public class PlayerInteraction : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        dialogueScript = GameObject.Find("DialogueManager").GetComponent<DialogueManager>();
+        dialogueScript = GameObject.Find("GameManager").GetComponent<DialogueManager>();
         pushObject = false;
     }
 
@@ -49,7 +49,8 @@ public class PlayerInteraction : MonoBehaviour
         
     }
 
-
+    //Enables the ability to push this object
+    //Used by other scripts
     public void canPushObject(GameObject obj){
         pushObject = true;
         pushableObject = obj;
@@ -57,12 +58,15 @@ public class PlayerInteraction : MonoBehaviour
         SetButtonVisability(pushObject);
     }
 
+    //Disables the ability to push this object
+    //Used by other scripts
     public void cannotPushObject(){
         pushObject = false;
         pushableObject = null;
         SetButtonVisability(pushObject);
     }
 
+    //Simply makes the button to push objects visable or invisable
     public void SetButtonVisability(bool visable){
         interactButton.SetActive(visable);
     }

@@ -17,7 +17,7 @@ public class CurrencyManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        saveScript = GameObject.Find("DataManager").GetComponent<CloudSaveScript>();
+        saveScript = GameObject.Find("GameManager").GetComponent<CloudSaveScript>();
         
         //StartCoroutine(CheckForData());
         //playerCash = 0; //Default is 0. Will change once a save system is implemented.

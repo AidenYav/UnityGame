@@ -16,7 +16,7 @@ public class NPCBehavior : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {   
-        dialogueManagerScript = GameObject.Find("DialogueManager").GetComponent<DialogueManager>();
+        dialogueManagerScript = GameObject.Find("GameManager").GetComponent<DialogueManager>();
         //playerInteractionScript = GameObject.Find("Player").GetComponent<PlayerInteraction>();
         spriteRenderer = GetComponent<SpriteRenderer>();
     }
