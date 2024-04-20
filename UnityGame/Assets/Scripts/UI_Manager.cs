@@ -315,6 +315,7 @@ public class UI_Manager : MonoBehaviour
     public void BackToStartScreen(){
         Activate(startScreen);
         Deactivate(loginChoices);
+        Deactivate(creditScreen);//This was also used for some reason?
     }
 
     public void MenuToLoginChoices(){
