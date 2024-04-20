@@ -53,7 +53,7 @@ public class DialogueManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        textBox = dialogueTextBox.transform.GetChild(0).gameObject.GetComponent<TextMeshProUGUI>();
+        textBox = dialogueTextBox.transform.Find("Dialogue").gameObject.GetComponent<TextMeshProUGUI>();
         currencyScript = GameObject.Find("GameManager").GetComponent<CurrencyManager>();
         //Initializes the variables used for the choice set-up
         choicesText = new TextMeshProUGUI[choices.Length];
@@ -142,7 +142,7 @@ public class DialogueManager : MonoBehaviour
         currentStory = new Story(inkJson.text);
         canInteract = true;
         canContinueDialogue = canInteract;
-        interactButton.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = "E - Interact";
+        interactButton.transform.Find("NPC-Interact").GetComponent<TextMeshProUGUI>().text = "E - Interact";
         interactButton.SetActive(canInteract);
         
     }

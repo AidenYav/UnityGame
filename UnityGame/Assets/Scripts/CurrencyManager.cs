@@ -11,7 +11,7 @@ public class CurrencyManager : MonoBehaviour
 {
     private CloudSaveScript saveScript;
     [SerializeField] private int playerCash; //Although money is typically a decimal/double, lets keep all money as a whole number
-    [SerializeField] private int reputation; //This will affect the player's cash multiplier
+    [SerializeField] private int playerReputation; //This will affect the player's cash multiplier
 
     [SerializeField] private TextMeshProUGUI cashCount;
     // Start is called before the first frame update
@@ -29,10 +29,15 @@ public class CurrencyManager : MonoBehaviour
         Debug.Log("Data loaded!");
         //Initializes the data into the script
         playerCash = 0;
+        playerReputation = 0;
         if (saveScript.GetValue("Cash") != null){
             playerCash = int.Parse(saveScript.GetValue("Cash").ToString());
         }
-        Debug.Log("Value initialized at: "+playerCash);
+        if (saveScript.GetValue("Reputation") != null){
+            playerReputation = int.Parse(saveScript.GetValue("Reputation").ToString());
+        }
+        Debug.Log("Cash initialized at: "+playerCash);
+        Debug.Log("Reputation initialized at: "+playerReputation);
         cashCount.text = "Cash: $" + playerCash;
     }
 
@@ -42,7 +47,7 @@ public class CurrencyManager : MonoBehaviour
     public void ChangeMoney(int amount){
         //Amount is calculated as reputation being a percent out of 100
         //Reputation is clamped between [-99,100]
-        amount = (int) Mathf.Floor(amount * (1 + reputation / 100f));
+        amount = (int) Mathf.Floor(amount * (1 + playerReputation / 100f));
         StartCoroutine(MoneyCounterAnimation(playerCash, playerCash + amount));
         //Actual player data is handled here
         playerCash += amount;
@@ -61,14 +66,14 @@ public class CurrencyManager : MonoBehaviour
     }
 
     public int GetReputaiton(){
-        return reputation;
+        return playerReputation;
     }
 
     //Adjust reputation accordingly
     public void ChangeReputation(int rep){
         //Reputation is restricted to the range of [-99,100]
-        this.reputation = Mathf.Clamp(this.reputation + rep, -99, 100);
-        Debug.Log("Reputation has been updated to: "+ reputation);
+        this.playerReputation = Mathf.Clamp(this.playerReputation + rep, -99, 100);
+        saveScript.AddValue("Reputation",playerReputation);
     }
 
     //Getter method for the amount of cash the player has.

@@ -44,7 +44,7 @@ public class Puzzle : MonoBehaviour
         saveScript = GameObject.Find("GameManager").GetComponent<CloudSaveScript>();
 
         time = 0;
-        timerUI = uiScript.timer.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
+        timerUI = uiScript.timer.transform.Find("TimerText").GetComponent<TextMeshProUGUI>();
         resultUI = uiScript.minigameResult.transform.Find("Backboard/ResultText").GetComponent<TextMeshProUGUI>();
     }
 
@@ -77,8 +77,9 @@ public class Puzzle : MonoBehaviour
             //Activates the UI for 
             uiScript.MinigameEnd();
             //If the player can complete the puzzle under the specified time, they succeed.
-            string result = time < puzzleTimeLimit ? "Success" : "Failed";
+            string result = time < puzzleTimeLimit ? "<color=green>Success</color>" : "<color=red>Failed</color>";
 
+            string stringTime = FormatTime(time);
             //Personal Best Logic
             double personalBest = time;//Default best is the current time
             //But reassign if the best time is not null
@@ -93,10 +94,13 @@ public class Puzzle : MonoBehaviour
             //While this if statement is slightly redundant, it can be used in the future to
             //Create some sort of bonus effect when achieving a new personal best.
             if(time <= personalBest){
+                //If the player achieves a new best time, color their current time green (White by default)
+                stringTime = "<color=green>" + stringTime + "</color>";
+
                 personalBest = time;
                 //Truncating the data to reduce the number of bytes used when saving data.
                 saveScript.AddValue("BestTime", Math.Floor(personalBest * 100)/100 );
-
+                
                 //If the player is properly logged in
                 if (saveScript.GetSuccessfulLogin()){
                     saveScript.LeaderboardAddScore(Math.Floor(personalBest * 100)/100);
@@ -105,7 +109,7 @@ public class Puzzle : MonoBehaviour
 
 
             int earnings = (int) (Math.Floor(1000/time)*puzzleCashMultiplier);
-            resultUI.text = String.Format("Result: {0}\nPersonal Best: {1} \nTime: {2} \nEarnings: {3:C}", result, FormatTime(personalBest), FormatTime(time), earnings);
+            resultUI.text = String.Format("Result: {0}\nPersonal Best: {1} \nTime: {2} \nEarnings: {3:C}", result, FormatTime(personalBest), stringTime, earnings);
             currencyScript.ChangeMoney(earnings);
         }   
         else{

@@ -196,7 +196,7 @@ public class CloudSaveScript : MonoBehaviour
     public async void ManualSave(){
         StopAllCoroutines();//Stops current Periodic Save
         await SaveGame();//Saves the game
-        //Debug.Log("Saving..." + ); 
+        //Debug.Log("Saving..."); 
         StartCoroutine(PeriodicSave()); //Starts a new Periodic Save
     }
     #pragma warning restore CS4014

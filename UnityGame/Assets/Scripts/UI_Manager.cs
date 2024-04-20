@@ -18,7 +18,7 @@ public class UI_Manager : MonoBehaviour
                         minigameResult, help, timer, cashCount;
 
     public GameObject signUp, loginChoices, leaderboardPage;
-    public TMP_FontAsset font;
+    public TMP_FontAsset retroFont, liberationSansFont;
 
     //---------------------------------Other Scripts--------------------------------------
     private PuzzleManager puzzleScript;
@@ -47,12 +47,12 @@ public class UI_Manager : MonoBehaviour
         currencyScript = GameObject.Find("GameManager").GetComponent<CurrencyManager>();
         player = GameObject.Find("Player");
         player2 = GameObject.Find("Player2");
-        SetAllFont(this.transform, font);
+        SetAllFont(this.transform, retroFont);
 
         Activate(startScreen);
         
-        foreach (Transform child in leaderboardPage.transform.GetChild(0)) leaderNames.Add(child.gameObject.GetComponent<TextMeshProUGUI>());
-        foreach (Transform child in leaderboardPage.transform.GetChild(1)) leaderScores.Add(child.gameObject.GetComponent<TextMeshProUGUI>());
+        foreach (Transform child in leaderboardPage.transform.Find("Names")) leaderNames.Add(child.gameObject.GetComponent<TextMeshProUGUI>());
+        foreach (Transform child in leaderboardPage.transform.Find("Score")) leaderScores.Add(child.gameObject.GetComponent<TextMeshProUGUI>());
     }
 
     //Sets all UI elements to a uniform font.
@@ -204,13 +204,13 @@ public class UI_Manager : MonoBehaviour
     public async void CreateAccount(){
         
         //check username validity
-        string username = signUp.transform.GetChild(0).gameObject.GetComponent<TMP_InputField>().text;
+        string username = signUp.transform.Find("Username").gameObject.GetComponent<TMP_InputField>().text;
         //check password validity
-        string password1 = signUp.transform.GetChild(1).gameObject.GetComponent<TMP_InputField>().text;
+        string password1 = signUp.transform.Find("Password1").gameObject.GetComponent<TMP_InputField>().text;
         //A proper login system would be nice to have, especially if this was for a real game.
         //Maybe come back to this issue if there is extra time to develop this.
-        string password2 = signUp.transform.GetChild(2).gameObject.GetComponent<TMP_InputField>().text;
-        TextMeshProUGUI errorBox = signUp.transform.GetChild(3).gameObject.GetComponent<TextMeshProUGUI>();
+        string password2 = signUp.transform.Find("Password2").gameObject.GetComponent<TMP_InputField>().text;
+        TextMeshProUGUI errorBox = signUp.transform.Find("Errors").gameObject.GetComponent<TextMeshProUGUI>();
         
         if (signingUp){
             //Displays potential sign-up issues
@@ -332,20 +332,36 @@ public class UI_Manager : MonoBehaviour
          *1 --> Sign up
          *2 --> Play as Guest
         */
+        //We need to keep this font because it enables lower/capital case characters to be visable, which is critical for login information
+        signUp.transform.Find("Username").GetComponent<TMP_InputField>().fontAsset = liberationSansFont;
+        signUp.transform.Find("Password1").GetComponent<TMP_InputField>().fontAsset = liberationSansFont;
+        signUp.transform.Find("Password2").GetComponent<TMP_InputField>().fontAsset = liberationSansFont;
+
+        //Login Option
         if (choice == 0){
             Activate(signUp);
             //Retrieves the button under the sign-up page to set as "Sign In"
             signUp.transform.Find("CreateAccount/Wood/Button Container/Button/Text").gameObject.GetComponent<TextMeshProUGUI>().text = "Sign In";
+            //Updates other elements in the UI to properly match the context of the situation
+            signUp.transform.Find("CreateNewAccountText").GetComponent<TextMeshProUGUI>().text = "Log in to your account";
+            signUp.transform.Find("UsernamePrompt").GetComponent<TextMeshProUGUI>().text = "Please Enter Your Username:";
+            signUp.transform.Find("PasswordPrompt").GetComponent<TextMeshProUGUI>().text = "Please Enter Your Password:";
             Deactivate(signUp.transform.Find("Password2").gameObject);
             signingUp = false;
         }
+        //Create new account Option
         else if(choice == 1){
             Activate(signUp);
             //Retrieves the button under the sign-up page to set as "Create Account!"
             signUp.transform.Find("CreateAccount/Wood/Button Container/Button/Text").gameObject.GetComponent<TextMeshProUGUI>().text = "Create Account!";
+            //Updates other elements in the UI to properly match the context of the situation
+            signUp.transform.Find("CreateNewAccountText").GetComponent<TextMeshProUGUI>().text = "Create a new account";
+            signUp.transform.Find("UsernamePrompt").GetComponent<TextMeshProUGUI>().text = "Please Create a Username:";
+            signUp.transform.Find("PasswordPrompt").GetComponent<TextMeshProUGUI>().text = "Please Create a Password:";
             Activate(signUp.transform.Find("Password2").gameObject);
             signingUp = true;
         }
+        //Guest Option
         else{
             //Load player into game
             saveScript.SetDataLoaded(true); //So the game can load

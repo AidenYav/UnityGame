@@ -12,8 +12,8 @@ public class PuzzleManager : MonoBehaviour
 {
 
     private GameObject[] puzzles;
-    public GameObject[] singlePlayerPuzzles;
-    public GameObject[] multiplayerPuzzles;
+    private GameObject[] singlePlayerPuzzles;
+    private GameObject[] multiplayerPuzzles;
 
     //The current puzzle will be recorded using an index, to easily increment puzzles in an accending order.
     [SerializeField] private int currentPuzzle; 
@@ -30,6 +30,13 @@ public class PuzzleManager : MonoBehaviour
     {
         uiScript = GameObject.Find("Canvas").GetComponent<UI_Manager>();
         multiplayerScript = GameObject.Find("GameManager").GetComponent<MultiplayerManager>();
+        //Sets all puzzle objects here
+        Transform single = this.transform.Find("SinglePlayerPuzzles");
+        Transform multi = this.transform.Find("MultiplayerPuzzles");
+        singlePlayerPuzzles = new GameObject[single.childCount];
+        multiplayerPuzzles = new GameObject[multi.childCount];
+        for(int i=0; i<singlePlayerPuzzles.Length; i++) singlePlayerPuzzles[i] = single.GetChild(i).gameObject;
+        for(int i=0; i<multiplayerPuzzles.Length; i++) multiplayerPuzzles[i] = multi.GetChild(i).gameObject;
         SetPuzzleType();
         RandomizePuzzle();
     }

@@ -13,9 +13,9 @@ This integer value will be added to the player's reputation value
 
 === main ===
 Hello player...
-Would you say that you are a good person? #Test:A
+Would you say that you are a good person?
     * [Yes] #Reputation:10
-        Thats good. #Test:B
+        Thats good.
         
     * [No] #Reputation: -10
         Oh...

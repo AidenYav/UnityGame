@@ -26,12 +26,7 @@ public class MultiplayerManager : MonoBehaviour
     // Update is called once per frame
 
     public void MultiplayerToggle(){
-        if(!isMultiplayerActivated){
-            isMultiplayerActivated = true;
-        }
-        else{
-            isMultiplayerActivated = false;
-        }
+        isMultiplayerActivated = !isMultiplayerActivated;
         puzzleManagerScript.SetPuzzleType();
     }
 

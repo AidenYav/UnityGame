@@ -56,7 +56,7 @@ public class PlayerInteraction : MonoBehaviour
     public void canPushObject(GameObject obj){
         pushObject = true;
         pushableObject = obj;
-        interactButton.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = "E - Push";
+        interactButton.transform.Find("NPC-Interact").GetComponent<TextMeshProUGUI>().text = "E - Push";
         SetButtonVisability(pushObject);
     }
 
