@@ -11,17 +11,18 @@ using UnityEngine.UI;
 
 public class Puzzle : MonoBehaviour
 {
-    // Start is called before the first frame update
-
-    private GameObject[] startAndEndPoints = new GameObject[3]; //Start and End Points
+    //--------------------Other Scripts-----------------------------
     private UI_Manager uiScript;
     private CurrencyManager currencyScript;
     private PuzzleManager puzzleScript;
     private CloudSaveScript saveScript;
-    private TextMeshProUGUI timerUI, resultUI;
-     private double time;
-    private GameObject obsticles;
-    private Vector3[] initialObsticlePosition;
+
+    //--------------------Puzzle Related Variables-----------------------------
+    private GameObject[] startAndEndPoints = new GameObject[3]; //Start and End Points
+    private TextMeshProUGUI timerUI, resultUI; //UI Objects
+    private GameObject obsticles; //An empty object acting as a folder for all obstical objects
+    private Vector3[] initialObsticlePosition; //An array containing all obstical initalized positions
+    private double time;
     private IEnumerator timer; //Timer Object for each puzzle
 
     [SerializeField] private double puzzleCashMultiplier, puzzleTimeLimit;

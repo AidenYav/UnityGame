@@ -5,12 +5,13 @@ using TMPro;
 
 public class NPCBehavior : MonoBehaviour
 {
-    SpriteRenderer spriteRenderer;
-    //private bool inRange;
-    //public TextMeshProUGUI dialogueTextBox;
-    public TextAsset inkFile;
-    //public PlayerInteraction playerInteractionScript;
+    //--------------------Temporary Variables-----------------------------
+    private SpriteRenderer spriteRenderer;
 
+    //--------------------NPC Dialogue File-----------------------------
+    public TextAsset inkFile;
+
+    //--------------------Other Scripts-----------------------------
     private DialogueManager dialogueManagerScript;
 
     // Start is called before the first frame update

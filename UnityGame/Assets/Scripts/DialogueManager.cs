@@ -45,11 +45,16 @@ public class DialogueManager : MonoBehaviour
     private bool isAddingRichTextTag = false;
 
     private bool skipLine = false;
+
+    //--------------------Other Scripts-----------------------------
+
+    private CurrencyManager currencyScript;
+
     // Start is called before the first frame update
     void Start()
     {
         textBox = dialogueTextBox.transform.GetChild(0).gameObject.GetComponent<TextMeshProUGUI>();
-
+        currencyScript = GameObject.Find("GameManager").GetComponent<CurrencyManager>();
         //Initializes the variables used for the choice set-up
         choicesText = new TextMeshProUGUI[choices.Length];
         int index = 0;
@@ -119,6 +124,7 @@ public class DialogueManager : MonoBehaviour
         dialogueTextBox.SetActive(isInteracting);
         interactButton.SetActive(!isInteracting);
         UpdateDialogueBox();
+        Movement_2D.SetCanMove(false);
     }
 
     //Deactivates the dialogue textbox
@@ -127,6 +133,7 @@ public class DialogueManager : MonoBehaviour
         textBox.text = "";
         dialogueTextBox.SetActive(isInteracting);
         NotInteractable();
+        Movement_2D.SetCanMove(true);
     }
 
     //Shows interact button and prepare dialogue interaction
@@ -227,10 +234,10 @@ public class DialogueManager : MonoBehaviour
     //to the corresponding text choice and name. Ex: Choice0 --> 0
     public void MakeChoice(int choiceIndex){
         currentStory.ChooseChoiceIndex(choiceIndex); //Updates the story to continue accordingly
-
-        //Choices affect reputation system
-        //if(choice == positive) --> reputation + x;
-        //if(choice == negative) --> reputation - x;
+        currentStory.Continue();//Skip the dialogue of the player's choice
+        //Processes the player's decision using Tags
+        DecisionTags(currentStory.currentTags);
+        
 
         //This hides all the choice buttons following the player's decision
         hideChoices(0);
@@ -238,6 +245,33 @@ public class DialogueManager : MonoBehaviour
         skipLine = false; //This is to prevent the typing animtion to skip right after the player makes a choice
         UpdateDialogueBox(); //Following the player's response, immediately continue the dialogue
     }
+
+    public void DecisionTags(List<string> currentTags){
+        foreach(string tag in currentTags){
+            //Split the tag
+            string[] splitTag = tag.Split(':');
+            //Ensures that the tag is approprietly parsed
+            if (splitTag.Length != 2){
+                Debug.Log("Error with tag, could not parse: " + tag);
+            }
+            else{
+                string tagKey = splitTag[0].Trim();
+                string tagValue = splitTag[1].Trim();
+                Debug.Log(tagValue);
+                //Currently only 1 tag, but this is set up for more tags in the future
+                switch(tagKey){
+                    case "Reputation":
+                        int rep = int.Parse(tagValue);
+                        currencyScript.ChangeReputation(rep);
+                        break;
+                    default:
+                        Debug.Log("Error, tag [" + tagKey + "] could not be identified.");
+                        break;
+                }
+            }
+        }
+    }
+
 
     //Getter method for canInteract.
     public bool getCanInteract(){

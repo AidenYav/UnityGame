@@ -10,8 +10,8 @@ using TMPro;
 public class CurrencyManager : MonoBehaviour
 {
     private CloudSaveScript saveScript;
-    public int playerCash; //Although money is typically a decimal/double, lets keep all money as a whole number
-    private int reputation; //This will affect the player's cash multiplier
+    [SerializeField] private int playerCash; //Although money is typically a decimal/double, lets keep all money as a whole number
+    [SerializeField] private int reputation; //This will affect the player's cash multiplier
 
     [SerializeField] private TextMeshProUGUI cashCount;
     // Start is called before the first frame update
@@ -40,7 +40,9 @@ public class CurrencyManager : MonoBehaviour
     //Changes the player's current currency count
     //Amount can be positive or negative
     public void ChangeMoney(int amount){
-        amount = (int) Mathf.Floor(amount*reputation/100f);
+        //Amount is calculated as reputation being a percent out of 100
+        //Reputation is clamped between [-99,100]
+        amount = (int) Mathf.Floor(amount * (1 + reputation / 100f));
         StartCoroutine(MoneyCounterAnimation(playerCash, playerCash + amount));
         //Actual player data is handled here
         playerCash += amount;
@@ -62,8 +64,11 @@ public class CurrencyManager : MonoBehaviour
         return reputation;
     }
 
+    //Adjust reputation accordingly
     public void ChangeReputation(int rep){
-        this.reputation += rep;
+        //Reputation is restricted to the range of [-99,100]
+        this.reputation = Mathf.Clamp(this.reputation + rep, -99, 100);
+        Debug.Log("Reputation has been updated to: "+ reputation);
     }
 
     //Getter method for the amount of cash the player has.

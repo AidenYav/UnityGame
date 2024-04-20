@@ -11,8 +11,10 @@ Primarily follows PascalCase conventions.
 
 public class PlayerInteraction : MonoBehaviour
 {
-
+    //--------------------Other Scripts-----------------------------
     private DialogueManager dialogueScript;
+
+    //--------------------Variables used for interactions-----------------------------
     public GameObject interactButton;
     private bool pushObject;
     private GameObject pushableObject;

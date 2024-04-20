@@ -10,27 +10,33 @@ using Unity.Services.Leaderboards.Models;
 
 public class UI_Manager : MonoBehaviour
 {
+
+    //-----------------------------UI Object Variables--------------------------------------
+
     // This could utilize a List, but then it would be difficult to use/read in the code
     public GameObject startScreen, menu, objectives, creditScreen,
                         minigameResult, help, timer, cashCount;
 
     public GameObject signUp, loginChoices, leaderboardPage;
-
     public TMP_FontAsset font;
+
+    //---------------------------------Other Scripts--------------------------------------
+    private PuzzleManager puzzleScript;
+    private CloudSaveScript saveScript;
+    private CurrencyManager currencyScript;
     private TransitionScript transitionScript, transitionScript2;
     private MultiplayerManager multiplayerManager;
-    private GameObject player, player2;
-    private PuzzleManager puzzleScript;
 
-    private CloudSaveScript saveScript;
-
-    private CurrencyManager currencyScript;
-
+    //--------------------Player data related variables-----------------------------
     private bool signingUp = false;//False for login procedure, true for sign in procedure
     // Start is called before the first frame update
 
     List<TextMeshProUGUI> leaderNames = new List<TextMeshProUGUI>();
     List<TextMeshProUGUI> leaderScores = new List<TextMeshProUGUI>();
+
+    //--------------------Player related variables-----------------------------
+    private GameObject player, player2;
+
     void Start()
     {
         transitionScript = GameObject.Find("Main Camera").GetComponent<TransitionScript>();
