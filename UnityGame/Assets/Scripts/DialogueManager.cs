@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using Ink.Runtime;
+using Ink.UnityIntegration;
 //Primary Script for Dialogue
 //Credits to Shaped by Rain Studios (Trever Mock) for inspiration on this system
 //https://www.youtube.com/watch?v=vY0Sk93YUhA&list=PL3viUl9h9k78KsDxXoAzgQ1yRjhm7p8kl&
@@ -24,6 +25,8 @@ public class DialogueManager : MonoBehaviour
     //-----------------Variables for Interacting with NPCs ------------------
     //This will store the npc currently being interacted with
     
+    [SerializeField] private TextAsset globalsInkFile;
+    [SerializeField] private InkFile globalsFilePath;
     private Story currentStory;
 
     //This will control if the player can interact with an npc.
@@ -50,6 +53,8 @@ public class DialogueManager : MonoBehaviour
 
     private CurrencyManager currencyScript;
 
+    private DialogueVariables dialogueVariables;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -63,6 +68,8 @@ public class DialogueManager : MonoBehaviour
             choice.SetActive(false);
             index++;
         }
+
+        dialogueVariables = new DialogueVariables(globalsFilePath.filePath);
     }
 
     // Update is called once per frame
@@ -120,15 +127,18 @@ public class DialogueManager : MonoBehaviour
 
     //Initiates Dialogue with NPC
     public void ActivateDialogue(){
+        dialogueVariables.StartListening(currentStory);
         isInteracting = true;
         dialogueTextBox.SetActive(isInteracting);
         interactButton.SetActive(!isInteracting);
         UpdateDialogueBox();
         Movement_2D.SetCanMove(false);
+        
     }
 
     //Deactivates the dialogue textbox
     public void DeactivateDialogue(){
+        dialogueVariables.StopListening(currentStory);
         isInteracting = false;
         textBox.text = "";
         dialogueTextBox.SetActive(isInteracting);
