@@ -7,13 +7,13 @@ using Unity.Services.Core;
 using Unity.Services.Authentication;
 using Unity.Services.CloudSave;
 
+using Newtonsoft.Json;
 using Unity.Services.Leaderboards;
 using Unity.Services.Leaderboards.Models;
 public class CloudSaveScript : MonoBehaviour
 {
     //This is the dictionary storing all the data loaded
     private Dictionary<string, object> data;
-
     //These booleans signal to other scripts about how the current state of the player's account regarding account information
     private bool dataLoaded = false, successfulLogin = false;
 
@@ -136,11 +136,7 @@ public class CloudSaveScript : MonoBehaviour
         else{
             Debug.Log("Error, attempted to save null key/value pairs!");
         }
-        Debug.Log("Updated cloud save: "+key + " and " + value);
-    }
-
-    public Dictionary<string,object> GetDictionary(){
-        return data;
+        
     }
 
     //Saves the player's data
@@ -150,9 +146,7 @@ public class CloudSaveScript : MonoBehaviour
             await CloudSaveService.Instance.Data.Player.SaveAsync(data);
             return true;
         }
-        catch(Exception e){
-            Debug.Log(e);
-
+        catch{
             return false;
         }
     }

@@ -52,15 +52,14 @@ public class DialogueManager : MonoBehaviour
     //--------------------Other Scripts-----------------------------
 
     private CurrencyManager currencyScript;
+
     private DialogueVariables dialogueVariables;
-    private CloudSaveScript saveScript;
 
     // Start is called before the first frame update
     void Start()
     {
         textBox = dialogueTextBox.transform.Find("Dialogue").gameObject.GetComponent<TextMeshProUGUI>();
         currencyScript = GameObject.Find("GameManager").GetComponent<CurrencyManager>();
-        saveScript = GameObject.Find("GameManager").GetComponent<CloudSaveScript>();
         //Initializes the variables used for the choice set-up
         choicesText = new TextMeshProUGUI[choices.Length];
         int index = 0;
@@ -70,16 +69,7 @@ public class DialogueManager : MonoBehaviour
             index++;
         }
 
-        StartCoroutine(ResyncDialogueVariables());
-    }
-
-    
-    public IEnumerator ResyncDialogueVariables(){
-        yield return new WaitUntil(() => saveScript.GetDataLoaded());
-        if (dialogueVariables == null){
-            dialogueVariables = new DialogueVariables(globalsFilePath.filePath, saveScript);
-        }
-        dialogueVariables.LoadData();
+        dialogueVariables = new DialogueVariables(globalsFilePath.filePath);
     }
 
     // Update is called once per frame
@@ -137,7 +127,6 @@ public class DialogueManager : MonoBehaviour
 
     //Initiates Dialogue with NPC
     public void ActivateDialogue(){
-        Debug.Log(dialogueVariables);
         dialogueVariables.StartListening(currentStory);
         isInteracting = true;
         dialogueTextBox.SetActive(isInteracting);

@@ -34,7 +34,7 @@ public class Puzzle : MonoBehaviour
         if(multiplayerCompatible){
             startAndEndPoints[2] = transform.Find("StartPoint2").gameObject;
         }
-        obsticles = this.transform.Find("ObsticleObjects").gameObject;
+        obsticles = transform.Find("ObsticleObjects").gameObject;
         initialObsticlePosition = new Vector3[obsticles.transform.childCount];
         initializeObsticles();
 
@@ -46,8 +46,6 @@ public class Puzzle : MonoBehaviour
         time = 0;
         timerUI = uiScript.timer.transform.Find("TimerText").GetComponent<TextMeshProUGUI>();
         resultUI = uiScript.minigameResult.transform.Find("Backboard/ResultText").GetComponent<TextMeshProUGUI>();
-
-        
     }
 
     public IEnumerator UpdateTimer(){
@@ -142,6 +140,7 @@ public class Puzzle : MonoBehaviour
     }
 
     public void ResetObsticles(){
+
         //Just in case something goes wrong
         if (initialObsticlePosition.Length != obsticles.transform.childCount){
             Debug.Log("Something is wrong, saved positions and obstical counts do not match.\n # of postions: "
@@ -163,6 +162,7 @@ public class Puzzle : MonoBehaviour
              + initialObsticlePosition + "\n # of obsticles: " + obsticles.transform.childCount);
             return;
         }
+        
         for(int i=0; i < initialObsticlePosition.Length; i++){
             initialObsticlePosition[i] = obsticles.transform.GetChild(i).transform.position;
         }
