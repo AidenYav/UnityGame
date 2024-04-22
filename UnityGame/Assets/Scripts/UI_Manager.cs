@@ -232,6 +232,7 @@ public class UI_Manager : MonoBehaviour
         else{
             //If data is loaded (On a guset account), and the player logs in,
             //First signout of the guest account and then login with the players credentials
+            //This also means all player data on the guest account is cleared
             if(saveScript.GetDataLoaded()){
                 saveScript.SetDataLoaded(false);
                 currencyScript.ResyncCashData();

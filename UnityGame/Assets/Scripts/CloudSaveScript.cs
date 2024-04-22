@@ -96,6 +96,7 @@ public class CloudSaveScript : MonoBehaviour
             //await AuthenticationService.Instance.UpdatePlayerNameAsync(username);
             Debug.Log("SignIn is successful.");
             successfulLogin = true;
+            ClearData(); //Login data should completely override any data. No matter what.
             await LoadData();
         }
         catch (AuthenticationException ex)

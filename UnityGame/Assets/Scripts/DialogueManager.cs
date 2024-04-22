@@ -69,7 +69,17 @@ public class DialogueManager : MonoBehaviour
             index++;
         }
 
+<<<<<<< Updated upstream
         dialogueVariables = new DialogueVariables(globalsFilePath.filePath);
+=======
+        StartCoroutine(ResyncDialogueVariables());
+    }
+
+    
+    public IEnumerator ResyncDialogueVariables(){
+        yield return new WaitUntil(() => saveScript.GetDataLoaded());
+        dialogueVariables = new DialogueVariables(globalsFilePath.filePath, saveScript);
+>>>>>>> Stashed changes
     }
 
     // Update is called once per frame
