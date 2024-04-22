@@ -55,11 +55,14 @@ public class DialogueManager : MonoBehaviour
 
     private DialogueVariables dialogueVariables;
 
+    private CloudSaveScript saveScript;
+
     // Start is called before the first frame update
     void Start()
     {
         textBox = dialogueTextBox.transform.Find("Dialogue").gameObject.GetComponent<TextMeshProUGUI>();
         currencyScript = GameObject.Find("GameManager").GetComponent<CurrencyManager>();
+        saveScript = GameObject.Find("GameManager").GetComponent<CloudSaveScript>();
         //Initializes the variables used for the choice set-up
         choicesText = new TextMeshProUGUI[choices.Length];
         int index = 0;
@@ -69,9 +72,6 @@ public class DialogueManager : MonoBehaviour
             index++;
         }
 
-<<<<<<< Updated upstream
-        dialogueVariables = new DialogueVariables(globalsFilePath.filePath);
-=======
         StartCoroutine(ResyncDialogueVariables());
     }
 
@@ -79,7 +79,6 @@ public class DialogueManager : MonoBehaviour
     public IEnumerator ResyncDialogueVariables(){
         yield return new WaitUntil(() => saveScript.GetDataLoaded());
         dialogueVariables = new DialogueVariables(globalsFilePath.filePath, saveScript);
->>>>>>> Stashed changes
     }
 
     // Update is called once per frame
