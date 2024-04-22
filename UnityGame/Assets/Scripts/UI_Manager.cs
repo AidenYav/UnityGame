@@ -26,6 +26,7 @@ public class UI_Manager : MonoBehaviour
     private CurrencyManager currencyScript;
     private TransitionScript transitionScript, transitionScript2;
     private MultiplayerManager multiplayerManager;
+    private DialogueManager dialogueManager;
 
     //--------------------Player data related variables-----------------------------
     private bool signingUp = false;//False for login procedure, true for sign in procedure
@@ -39,12 +40,15 @@ public class UI_Manager : MonoBehaviour
 
     void Start()
     {
+        
         transitionScript = GameObject.Find("Main Camera").GetComponent<TransitionScript>();
         transitionScript2 = GameObject.Find("Camera2").GetComponent<TransitionScript>();
-        multiplayerManager = GameObject.Find("GameManager").GetComponent<MultiplayerManager>();
         puzzleScript = GameObject.Find("PuzzleManager").GetComponent<PuzzleManager>();
-        saveScript = GameObject.Find("GameManager").GetComponent<CloudSaveScript>();
-        currencyScript = GameObject.Find("GameManager").GetComponent<CurrencyManager>();
+        GameObject gameManager = GameObject.Find("GameManager");
+        multiplayerManager = gameManager.GetComponent<MultiplayerManager>();
+        saveScript = gameManager.GetComponent<CloudSaveScript>();
+        currencyScript = gameManager.GetComponent<CurrencyManager>();
+        dialogueManager = gameManager.GetComponent<DialogueManager>();
         player = GameObject.Find("Player");
         player2 = GameObject.Find("Player2");
         SetAllFont(this.transform, retroFont);
@@ -235,6 +239,7 @@ public class UI_Manager : MonoBehaviour
             if(saveScript.GetDataLoaded()){
                 saveScript.SetDataLoaded(false);
                 currencyScript.ResyncCashData();
+                StartCoroutine(dialogueManager.ResyncDialogueVariables());
             }
             errorBox.text = await saveScript.SignInWithUsernamePasswordAsync(username, password1);
         }
