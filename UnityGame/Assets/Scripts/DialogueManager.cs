@@ -57,12 +57,15 @@ public class DialogueManager : MonoBehaviour
 
     private CloudSaveScript saveScript;
 
+    private PuzzleManager puzzleManager;
+
     // Start is called before the first frame update
     void Start()
     {
         textBox = dialogueTextBox.transform.Find("Dialogue").gameObject.GetComponent<TextMeshProUGUI>();
         currencyScript = GameObject.Find("GameManager").GetComponent<CurrencyManager>();
         saveScript = GameObject.Find("GameManager").GetComponent<CloudSaveScript>();
+        puzzleManager = GameObject.Find("PuzzleManager").GetComponent<PuzzleManager>();
         //Initializes the variables used for the choice set-up
         choicesText = new TextMeshProUGUI[choices.Length];
         int index = 0;
@@ -282,6 +285,10 @@ public class DialogueManager : MonoBehaviour
                     case "Reputation":
                         int rep = int.Parse(tagValue);
                         currencyScript.ChangeReputation(rep);
+                        break;
+                    case "Level":
+                        int level = int.Parse(tagValue) - 1; //Since there is no level 0, offset by 1
+                        puzzleManager.SetPuzzle(level); 
                         break;
                     default:
                         Debug.Log("Error, tag [" + tagKey + "] could not be identified.");

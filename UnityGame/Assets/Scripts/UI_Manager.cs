@@ -192,7 +192,8 @@ public class UI_Manager : MonoBehaviour
 
     public void PlayMinigameAgain(){
         Deactivate(minigameResult);
-        GameObject newPuzzle = puzzleScript.RandomizePuzzle(/*puzzleScript.GetCurrentPuzzleIndex()*/);
+        GameObject newPuzzle = puzzleScript.GetCurrentPuzzle();//puzzleScript.RandomizePuzzle(/*puzzleScript.GetCurrentPuzzleIndex()*/);
+        newPuzzle.GetComponent<Puzzle>().ResetObsticles();
         //These variables are less efficient, however this makes it easier to read the code
         Vector3 pos1 = newPuzzle.transform.GetComponent<Puzzle>().GetStartPosition();
 
