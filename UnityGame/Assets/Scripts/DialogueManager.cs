@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using Ink.Runtime;
-using Ink.UnityIntegration;
+
 //Primary Script for Dialogue
 //Credits to Shaped by Rain Studios (Trever Mock) for inspiration on this system
 //https://www.youtube.com/watch?v=vY0Sk93YUhA&list=PL3viUl9h9k78KsDxXoAzgQ1yRjhm7p8kl&
@@ -26,7 +26,7 @@ public class DialogueManager : MonoBehaviour
     //This will store the npc currently being interacted with
     
     [SerializeField] private TextAsset globalsInkFile;
-    [SerializeField] private InkFile globalsFilePath;
+    [SerializeField] private TextAsset globalsJson;
     private Story currentStory;
 
     //This will control if the player can interact with an npc.
@@ -81,7 +81,7 @@ public class DialogueManager : MonoBehaviour
     
     public IEnumerator ResyncDialogueVariables(){
         yield return new WaitUntil(() => saveScript.GetDataLoaded());
-        dialogueVariables = new DialogueVariables(globalsFilePath.filePath, saveScript);
+        dialogueVariables = new DialogueVariables(globalsJson, saveScript);
     }
 
     // Update is called once per frame

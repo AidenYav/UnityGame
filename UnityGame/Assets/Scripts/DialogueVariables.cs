@@ -17,7 +17,7 @@ public class DialogueVariables
 
     private CloudSaveScript saveScript;
 
-    public DialogueVariables(string globalsFilePath, CloudSaveScript saveScript){
+    public DialogueVariables(TextAsset globalsFilePath, CloudSaveScript saveScript){
         this.saveScript = saveScript;
         //Initialize Dictionary
         variables = new Dictionary<string, Ink.Runtime.Object>();
@@ -35,12 +35,12 @@ public class DialogueVariables
     }
     
 
-    public void LoadData(string globalsFilePath){
+    public void LoadData(TextAsset globalsFilePath){
         //Loads the defaults in the inkfile using the file path
-        string inkFileContents = File.ReadAllText(globalsFilePath);
-        Ink.Compiler compiler = new Ink.Compiler(inkFileContents);
-        globalVariablesStory = compiler.Compile();
-
+        // string inkFileContents = File.ReadAllText(globalsFilePath);
+        // Ink.Compiler compiler = new Ink.Compiler(inkFileContents);
+        // globalVariablesStory = compiler.Compile();
+        globalVariablesStory = new Story(globalsFilePath.text);
         //Loads player data into the ink file, if it exists
         if (saveScript.GetValue("StoryData") != null){
             Debug.Log("Loading player story data...");
