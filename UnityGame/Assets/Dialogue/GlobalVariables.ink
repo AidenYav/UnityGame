@@ -6,6 +6,7 @@
 VAR MayorScene1 = true
 VAR UncleScene1 = true
 VAR LevelIntroScene = true
+VAR ShopStartScene = true
 //----Player Variables----
 VAR name = "Traveler"
 VAR tavernCost = 500

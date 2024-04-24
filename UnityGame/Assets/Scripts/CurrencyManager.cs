@@ -48,7 +48,12 @@ public class CurrencyManager : MonoBehaviour
     public void ChangeMoney(int amount){
         //Amount is calculated as reputation being a percent out of 100
         //Reputation is clamped between [-99,100]
-        amount = (int) Mathf.Floor(amount * (1 + playerReputation / 100f));
+        //If the amount is positive, use the formula
+        //If the amount is negative, don't use any formulas (essentialy do nothing)
+        if (amount > 0){
+            amount = (int) Mathf.Floor(amount * (1 + playerReputation / 100f));
+        }
+        
         StartCoroutine(MoneyCounterAnimation(playerCash, playerCash + amount));
         //Actual player data is handled here
         playerCash += amount;
@@ -64,6 +69,9 @@ public class CurrencyManager : MonoBehaviour
             cashCount.text = "Cash: $" + startAmount;
             yield return new WaitForSeconds(0.01f);
         }
+        //No animations for subtracting money. It is relatively easy to create, but at the moment
+        //It is not a priority and we don't have time to test out new features unforunately.
+        cashCount.text = "Cash: $" + targetAmount;
     }
 
     public int GetReputaiton(){

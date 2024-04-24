@@ -290,6 +290,10 @@ public class DialogueManager : MonoBehaviour
                         int level = int.Parse(tagValue) - 1; //Since there is no level 0, offset by 1
                         puzzleManager.SetPuzzle(level); 
                         break;
+                    case "Money":
+                        int money = int.Parse(tagValue);
+                        currencyScript.ChangeMoney(money);
+                        break;
                     default:
                         Debug.Log("Error, tag [" + tagKey + "] could not be identified.");
                         break;
