@@ -159,7 +159,8 @@ public class UI_Manager : MonoBehaviour
     public void ClickedHelp(){
         Deactivate(menu);
         Deactivate(cashCount);
-        //Activate(help);
+        Deactivate(startScreen);
+        Activate(help);
     }
 
     public void ClickedResume(){
@@ -320,10 +321,25 @@ public class UI_Manager : MonoBehaviour
         Deactivate(creditScreen);//This was also used for some reason?
     }
 
+    public void HelpBack(){
+        Deactivate(help);
+        //Help is accessed from two points, the start screen, and the player menu
+        //Player Menu
+        //Data is only loaded when the player is actively playing
+        if(saveScript.GetDataLoaded()){
+            OpenInGameMenu();
+        }
+        //Start Screen
+        else{
+            Activate(startScreen);
+        }
+    }
+
     public void MenuToLoginChoices(){
         Activate(loginChoices);
         Deactivate(menu);
         Deactivate(cashCount);
+        saveScript.SetDataLoaded(false);
         if(saveScript.GetSuccessfulLogin()){
             saveScript.SignOut();
             saveScript.SetSuccessfulLogin(false);
