@@ -6,7 +6,7 @@ using TMPro;
 public class NPCBehavior : MonoBehaviour
 {
     //--------------------Temporary Variables-----------------------------
-    private SpriteRenderer spriteRenderer;
+    //private SpriteRenderer spriteRenderer;
 
     //--------------------NPC Dialogue File-----------------------------
     public TextAsset inkFile;
@@ -19,7 +19,7 @@ public class NPCBehavior : MonoBehaviour
     {   
         dialogueManagerScript = GameObject.Find("GameManager").GetComponent<DialogueManager>();
         //playerInteractionScript = GameObject.Find("Player").GetComponent<PlayerInteraction>();
-        spriteRenderer = GetComponent<SpriteRenderer>();
+        //spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
     //Triggers when another Collder2D (always the player) enters the NPC's collider range, 
@@ -27,7 +27,7 @@ public class NPCBehavior : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D other){
         //Makes sure it is the player that entered the NPC's area
         if (other.gameObject.tag == "Player"){
-            spriteRenderer.color = Color.red;
+            //spriteRenderer.color = Color.red;
             //inRange = true;
             dialogueManagerScript.Interactable(this.inkFile);
         }
@@ -43,7 +43,7 @@ public class NPCBehavior : MonoBehaviour
     private void OnTriggerExit2D(Collider2D other){
         //Makes sure it is the player that exits the NPC's area
         if (other.gameObject.tag == "Player"){
-            spriteRenderer.color = Color.white;
+            //spriteRenderer.color = Color.white;
             //inRange = true;
             dialogueManagerScript.NotInteractable();
         }

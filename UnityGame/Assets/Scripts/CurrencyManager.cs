@@ -13,7 +13,7 @@ public class CurrencyManager : MonoBehaviour
     [SerializeField] private int playerCash; //Although money is typically a decimal/double, lets keep all money as a whole number
     [SerializeField] private int playerReputation; //This will affect the player's cash multiplier
 
-    [SerializeField] private TextMeshProUGUI cashCount;
+    [SerializeField] private TextMeshProUGUI cashCount, reputationStat;
     // Start is called before the first frame update
     void Start()
     {
@@ -39,6 +39,7 @@ public class CurrencyManager : MonoBehaviour
         Debug.Log("Cash initialized at: "+playerCash);
         Debug.Log("Reputation initialized at: "+playerReputation);
         cashCount.text = "Cash: $" + playerCash;
+        reputationStat.text = "Reputation: " + playerReputation;
     }
 
 
@@ -73,6 +74,12 @@ public class CurrencyManager : MonoBehaviour
     public void ChangeReputation(int rep){
         //Reputation is restricted to the range of [-99,100]
         this.playerReputation = Mathf.Clamp(this.playerReputation + rep, -99, 100);
+        if(playerReputation >= 0){
+            reputationStat.text = "Reputation: <color=green>"+playerReputation+"</color>";
+        }
+        else{
+            reputationStat.text ="Reputation: <color=red>"+playerReputation+"</color>";
+        }
         saveScript.AddValue("Reputation",playerReputation);
     }
 

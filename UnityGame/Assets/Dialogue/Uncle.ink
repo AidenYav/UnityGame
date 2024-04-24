@@ -9,7 +9,8 @@ INCLUDE GlobalVariables.ink
     - Uncle: About…?
         * Grandma left me a building.
     - Uncle: <i>WHAT? THAT WRETCHED OLD WOMAN!</i> Ah hem. Well, <color=orange>{name}</color>, you know your grandma was very… sick in her last days. She must’ve made a grave mistake filling out the will!
-        *Grandma made sure that the mayor knew it was mine…
+        *Grandma made sure that...
+        *...the mayor knew it was mine…
     - Uncle: Well... running a business or even living in that building takes an awful lot of time and money. Are you even prepared?
         *Yes. #Reputation:5
     - Uncle: How naive. If you don’t have at least <color=green>{tavernCost}</color>, that building is mine.
