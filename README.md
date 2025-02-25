@@ -6,7 +6,9 @@ TavernTimes is a business game written in C# and built in Unity for the 2023-202
 Prepare to enter the realm of TavernTimes, a game that beckons thee to immerse themselves in a vibrant world teeming with business opportunity and peril. Will you rise to glory or fade into obscurity? The choice, dear traveler, is yours to make.
 
 ### Install/Run Instructions
-Download the repository and unzip the files. Run the "TavernTimes" application to play!
+Online version: https://someone1027.itch.io/tavern-times
+
+You can also download an older version under the _CompletedGameVersions folder, however, this is more of a prototype of our game.
 
 ### License
 MIT License
