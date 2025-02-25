@@ -6,7 +6,7 @@ using TMPro;
 public class NPCBehavior : MonoBehaviour
 {
     //--------------------Temporary Variables-----------------------------
-    //private SpriteRenderer spriteRenderer;
+    private SpriteRenderer spriteRenderer;
 
     //--------------------NPC Dialogue File-----------------------------
     public TextAsset inkFile;

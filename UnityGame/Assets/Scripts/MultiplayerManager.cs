@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class MultiplayerManager : MonoBehaviour
 {
-    private bool isMultiplayerActivated;
+    private bool isMultiplayerActivated = true;
 
     private Camera cam1,cam2;
     private GameObject player2;
