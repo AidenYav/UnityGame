@@ -31,7 +31,7 @@ public class PlayerInteraction : MonoBehaviour
 
         //Specifically for pushing objects
         //The Dialogue manager handles the dialogue interaction
-        if(pushObject && Input.GetKeyDown(KeyCode.E)){
+        if(pushObject && (Input.GetKeyDown(KeyCode.E) || Input.GetKeyDown(KeyCode.Space))){
             InteractButtonOnPress();
         }
     }
@@ -56,7 +56,7 @@ public class PlayerInteraction : MonoBehaviour
     public void canPushObject(GameObject obj){
         pushObject = true;
         pushableObject = obj;
-        interactButton.transform.Find("NPC-Interact").GetComponent<TextMeshProUGUI>().text = "E - Push";
+        interactButton.transform.Find("NPC-Interact").GetComponent<TextMeshProUGUI>().text = "Space - Push";
         SetButtonVisability(pushObject);
     }
 
