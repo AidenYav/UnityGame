@@ -125,7 +125,7 @@ public class UI_Manager : MonoBehaviour
         //If the player has multiplayer on AMD is trying to leave the puzzle (implying they are currently in the puzzle),
         //Then fade both characters out before moving player 1 and deactivating player 2
         transitionScript.FancyFadeOut();
-        if(multiplayerManager.GetIsMultiplayerActivated() && leavePuzzle){
+        if(multiplayerManager.GetIsMultiplayerActivated() && puzzleScript.GetInPuzzle()){
             //Assumes Camera2 and Player2 are activated
             transitionScript2.FancyFadeOut();
             yield return new WaitForSeconds(2);//Wait for the transition to complete
@@ -185,13 +185,14 @@ public class UI_Manager : MonoBehaviour
 
     public void LeaveMiniGame(){
         Deactivate(minigameResult);
-        puzzleScript.SetInPuzzle(false);
         puzzleScript.GetCurrentPuzzle().GetComponent<Puzzle>().ResetObsticles();
         //Should place them outside of the building/tavern or something? not sure where we should place them yet.
         StartCoroutine(MovePlayer(new Vector3(0,0,0), new Vector3(0,0,0), true));
+        puzzleScript.SetInPuzzle(false);
     }
 
     public void PlayMinigameAgain(){
+        
         Deactivate(minigameResult);
         GameObject newPuzzle = puzzleScript.GetCurrentPuzzle();//puzzleScript.RandomizePuzzle(/*puzzleScript.GetCurrentPuzzleIndex()*/);
         newPuzzle.GetComponent<Puzzle>().ResetObsticles();
@@ -201,7 +202,24 @@ public class UI_Manager : MonoBehaviour
         Vector3 pos2 = multiplayerManager.GetIsMultiplayerActivated() ? newPuzzle.transform.GetComponent<Puzzle>().GetStartPosition2() : new Vector3(0,0,0);
         
         StartCoroutine(MovePlayer(pos1, pos2, false));
+        puzzleScript.SetInPuzzle(true);
     }
+
+    public void PlayNextMinigame(){
+        
+        Deactivate(minigameResult);
+
+        puzzleScript.GetCurrentPuzzle().GetComponent<Puzzle>().ResetObsticles();
+
+        GameObject newPuzzle = puzzleScript.NextPuzzle();
+        //These variables are less efficient, however this makes it easier to read the code
+        Vector3 pos1 = newPuzzle.transform.GetComponent<Puzzle>().GetStartPosition();
+        Vector3 pos2 = multiplayerManager.GetIsMultiplayerActivated() ? newPuzzle.transform.GetComponent<Puzzle>().GetStartPosition2() : new Vector3(0,0,0);
+        
+        StartCoroutine(MovePlayer(pos1, pos2, false));
+        puzzleScript.SetInPuzzle(true);
+    }
+
     #pragma warning disable CS4014
     public async void CreateAccount(){
         
@@ -404,7 +422,7 @@ public class UI_Manager : MonoBehaviour
             string playerIdentifier = page.Results[i].PlayerId.ToString() == saveScript.GetPlayerId() ? "<color=\"green\">" : "";
             //Update the leaderboard
             leaderNames[i].text = (i+1) + ". " + playerIdentifier + page.Results[i].PlayerName.Substring(0,page.Results[i].PlayerName.Length-5);
-            leaderScores[i].text = playerIdentifier + page.Results[i].Score.ToString() + " Seconds";
+            leaderScores[i].text = playerIdentifier + page.Results[i].Score.ToString() + " Secs";
         }
         //Remove extra text boxes
         for(int i=page.Total; i<leaderNames.Count; i++){
@@ -436,14 +454,14 @@ public class UI_Manager : MonoBehaviour
             //Enable their options to view leaderboards and save the game
             Activate(menu.transform.Find("Save").gameObject);
             Activate(menu.transform.Find("Leaderboard").gameObject);
-            menu.transform.Find("Login_SignUp/Text").GetComponent<TextMeshProUGUI>().text = "Sign Out";
+            menu.transform.Find("Login_SignUp/Wood/Button_Container/Login_SignUp/Text").GetComponent<TextMeshProUGUI>().text = "Sign Out";
         }
         //Otherwise, if they are not logged in
         else{
             //Disable their ability to save or view leaderboard (since these require a connection to unity services)
             Deactivate(menu.transform.Find("Save").gameObject);
             Deactivate(menu.transform.Find("Leaderboard").gameObject);
-            menu.transform.Find("Login_SignUp/Text").GetComponent<TextMeshProUGUI>().text = "Login/Sign Up";
+            menu.transform.Find("Login_SignUp/Wood/Button_Container/Login_SignUp/Text").GetComponent<TextMeshProUGUI>().text = "Login/Sign Up";
         }
     }
 

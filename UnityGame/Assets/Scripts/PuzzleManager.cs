@@ -82,6 +82,11 @@ public class PuzzleManager : MonoBehaviour
         }
         return puzzles[currentPuzzle];
     }
+    
+    public GameObject NextPuzzle(){
+        return SetPuzzle(currentPuzzle + 1);
+    }
+
     //Randomly selects a pre-built puzzle to use
     public GameObject RandomizePuzzle(){
         return puzzles[Random.Range(0,puzzles.Length)];
