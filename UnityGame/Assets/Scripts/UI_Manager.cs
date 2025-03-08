@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using Unity.Services.Leaderboards.Models;
+using UnityEngine.UI;
 /* A Class meant to contain all code related to
  * what should happen following a button press.
 */
@@ -19,6 +20,9 @@ public class UI_Manager : MonoBehaviour
 
     public GameObject signUp, loginChoices, leaderboardPage;
     public TMP_FontAsset retroFont, liberationSansFont;
+
+    public Slider volumeSlider;
+    public AudioSource musicSource;
 
     //---------------------------------Other Scripts--------------------------------------
     private PuzzleManager puzzleScript;
@@ -471,4 +475,9 @@ public class UI_Manager : MonoBehaviour
         puzzleScript.RestartPuzzle();
     }
 
+
+    public void adjustVolume(){
+        musicSource.volume = volumeSlider.value;
+        
+    }
 }
