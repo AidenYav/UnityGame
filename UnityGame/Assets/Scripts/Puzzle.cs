@@ -21,9 +21,11 @@ public class Puzzle : MonoBehaviour
     private GameObject[] startAndEndPoints = new GameObject[3]; //Start and End Points
     private TextMeshProUGUI timerUI, resultUI; //UI Objects
     private GameObject obsticles; //An empty object acting as a folder for all obstical objects
+    private GameObject buttons;
     private Vector3[] initialObsticlePosition; //An array containing all obstical initalized positions
     private double time;
     private IEnumerator timer; //Timer Object for each puzzle
+    
 
     [SerializeField] private double puzzleCashMultiplier, puzzleTimeLimit;
     [SerializeField] private bool multiplayerCompatible;
@@ -37,6 +39,8 @@ public class Puzzle : MonoBehaviour
         obsticles = transform.Find("ObsticleObjects").gameObject;
         initialObsticlePosition = new Vector3[obsticles.transform.childCount];
         initializeObsticles();
+
+        buttons = transform.Find("ButtonObjects").gameObject;
 
         uiScript = GameObject.Find("Canvas").GetComponent<UI_Manager>();
         currencyScript = GameObject.Find("GameManager").GetComponent<CurrencyManager>();
@@ -152,6 +156,9 @@ public class Puzzle : MonoBehaviour
         //Resets the puzzle to it's original state
         for(int i=0; i < obsticles.transform.childCount; i++){
             obsticles.transform.GetChild(i).transform.position = initialObsticlePosition[i];
+        }
+        for(int i=0; i<buttons.transform.childCount; i++){
+            buttons.transform.GetChild(i).Find("Button").gameObject.GetComponent<PuzzleButton>().reset();
         }
     }
 
