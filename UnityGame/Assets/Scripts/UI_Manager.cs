@@ -125,6 +125,7 @@ public class UI_Manager : MonoBehaviour
     //!leavePuzzle = player is going from open world to puzzle = enterPuzzle
     private IEnumerator MovePlayer(Vector3 pos1, Vector3 pos2, bool leavePuzzle){
         Movement_2D.SetCanMove(false); //Deactivate all movement
+        puzzleScript.zoomAllowed = false;
         
         //If the player has multiplayer on AMD is trying to leave the puzzle (implying they are currently in the puzzle),
         //Then fade both characters out before moving player 1 and deactivating player 2
@@ -149,10 +150,11 @@ public class UI_Manager : MonoBehaviour
             //yield return new WaitForSeconds(2);
             transitionScript2.FancyFadeIn();
         }
-        else{
-            yield return new WaitForSeconds(2);
-        }
+        
+        yield return new WaitForSeconds(2);
+        
         Movement_2D.SetCanMove(true);
+        puzzleScript.zoomAllowed = true;
     }
     //-------------------------------------------------UI Functions/Methods-----------------------------------------------------------
     public void ReturnToMenu(){ //This might be changed in the future
@@ -176,10 +178,14 @@ public class UI_Manager : MonoBehaviour
     public void MinigameEnd(){
         Activate(minigameResult);
         Deactivate(timer);
+        if (puzzleScript.zoomActive){
+            puzzleScript.toggleCameraZoom();
+            puzzleScript.zoomAllowed = false;
+        }
     }
 
     public void MinigameStart(){
-        Activate(timer);
+        // Activate(timer);
         //StartCoroutine(MovePlayer(puzzleScript.GetCurrentPuzzle().transform.GetComponent<Puzzle>().GetStartPosition()));
     }
 
@@ -200,6 +206,9 @@ public class UI_Manager : MonoBehaviour
         Deactivate(minigameResult);
         GameObject newPuzzle = puzzleScript.GetCurrentPuzzle();//puzzleScript.RandomizePuzzle(/*puzzleScript.GetCurrentPuzzleIndex()*/);
         newPuzzle.GetComponent<Puzzle>().ResetObsticles();
+        if (puzzleScript.zoomActive){
+            puzzleScript.toggleCameraZoom();
+        }
         //These variables are less efficient, however this makes it easier to read the code
         Vector3 pos1 = newPuzzle.transform.GetComponent<Puzzle>().GetStartPosition();
 
@@ -207,6 +216,7 @@ public class UI_Manager : MonoBehaviour
         
         StartCoroutine(MovePlayer(pos1, pos2, false));
         puzzleScript.SetInPuzzle(true);
+        
     }
 
     public void PlayNextMinigame(){

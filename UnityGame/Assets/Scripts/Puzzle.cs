@@ -28,6 +28,7 @@ public class Puzzle : MonoBehaviour
     
 
     [SerializeField] private double puzzleCashMultiplier, puzzleTimeLimit;
+    [SerializeField] public float zoomDistance;
     [SerializeField] private bool multiplayerCompatible;
     void Start()
     {
@@ -50,6 +51,9 @@ public class Puzzle : MonoBehaviour
         time = 0;
         timerUI = uiScript.timer.transform.Find("TimerText").GetComponent<TextMeshProUGUI>();
         resultUI = uiScript.minigameResult.transform.Find("Backboard/ResultText").GetComponent<TextMeshProUGUI>();
+        if (zoomDistance < 5){
+            zoomDistance = 6;
+        }
     }
 
     public IEnumerator UpdateTimer(){
@@ -60,7 +64,7 @@ public class Puzzle : MonoBehaviour
 
             yield return null;
             //Update timer text
-            timerUI.text = FormatTime(time);
+            // timerUI.text = FormatTime(time);
         }
     }
 

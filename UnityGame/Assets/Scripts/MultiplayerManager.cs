@@ -56,6 +56,10 @@ public class MultiplayerManager : MonoBehaviour
         multiplayerBoarder.SetActive(false);
     }
 
+
+    public Camera getCam2(){
+        return cam2;
+    }
     public bool GetIsMultiplayerActivated(){
         return isMultiplayerActivated;
     }

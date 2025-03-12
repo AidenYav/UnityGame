@@ -10,18 +10,32 @@ public class CameraMovement : MonoBehaviour
 
     public Vector2 initialVel, accel;
 
-    private IEnumerator currentMove;
+    private float zoomDistance = 5;
+
+
+    private IEnumerator currentMove, currentZoom;
+    private GameObject target;
+    public GameObject multiplayerDivider, Camera2;
     // Start is called before the first frame update
     void Start()
     {
         timeToLockOn = 0.75f;
-
+        setTargetPlayer();
     }
+
+    public void setTargetPlayer(){
+        target = player;
+    }
+
+    public void setTarget(GameObject newTarget){
+        target = newTarget;
+    }
+
 
     // Update is called once per frame
     void Update()
     {
-        goToTarget((Vector2)player.transform.position);
+        goToTarget((Vector2)target.transform.position);
     }
 
     public Vector2 getDistanceFromTarget(Vector2 v){
@@ -71,5 +85,55 @@ public class CameraMovement : MonoBehaviour
         StopCoroutine(currentMove);
     }
 
-    
+    public void zoomToTarget(float targetDist){
+        if (multiplayerDivider == null){
+            Debug.LogWarning("Cannot call zoom for this camera object!");
+        }
+        if (currentZoom != null){
+            StopCoroutine(currentZoom);
+        }
+        StartCoroutine(currentZoom = zoom( (double) targetDist));
+
+    }
+
+    public void resetCameraZoom(){
+        zoomToTarget(zoomDistance);
+    }
+
+
+    public IEnumerator zoom(double targetDist){
+        Camera cam = gameObject.GetComponent<Camera>();
+        Camera cam2 = Camera2.GetComponent<Camera>();
+        double initialZoom = cam.orthographicSize;
+        double zoomDist = targetDist - initialZoom;
+        double timePassed = 0;
+
+        //Is the camera zooming in?
+        bool zoomIn = zoomDist <= 0;
+        multiplayerDivider.SetActive(zoomIn);
+        
+        
+        
+        while(timePassed < timeToLockOn){
+           
+            timePassed += Time.deltaTime;
+
+            float rate = (float) timePassed / timeToLockOn;
+
+            float val = Mathf.Sqrt(1 - Mathf.Pow(rate - 1 , 2 ));
+            
+            if (zoomIn){
+                cam.rect = new Rect(0,0,1.0f - 0.5f*val,1);
+                cam2.rect = new Rect(1.0f - 0.5f*val, 0, 1.0f - 0.5f*val, 1);
+            }else{
+                cam.rect = new Rect(0,0,0.5f + 0.5f*val,1);
+                cam2.rect = new Rect(0.5f + 0.5f*val, 0, 0.5f + 0.5f*val, 1);
+            }
+            
+            cam.orthographicSize = (float) initialZoom + (float) zoomDist*val;
+            yield return null;
+        }
+
+        cam.orthographicSize = (float) targetDist;
+    }
 }

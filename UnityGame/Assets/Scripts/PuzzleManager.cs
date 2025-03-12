@@ -20,16 +20,21 @@ public class PuzzleManager : MonoBehaviour
 
     private UI_Manager uiScript;
 
+    private CameraMovement cameraMovementScript;
+
     private MultiplayerManager multiplayerScript;
     private bool inPuzzle;
 
     private bool multiplayerActive;
+    public bool zoomActive;
+    public bool zoomAllowed;
 
     // Start is called before the first frame update
     void Start()
     {
         uiScript = GameObject.Find("Canvas").GetComponent<UI_Manager>();
         multiplayerScript = GameObject.Find("GameManager").GetComponent<MultiplayerManager>();
+        cameraMovementScript = GameObject.Find("Main Camera").GetComponent<CameraMovement>();
         //Sets all puzzle objects here
         Transform single = this.transform.Find("SinglePlayerPuzzles");
         Transform multi = this.transform.Find("MultiplayerPuzzles");
@@ -47,6 +52,9 @@ public class PuzzleManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.R) && inPuzzle){
             RestartPuzzle();
         } 
+        if (inPuzzle && multiplayerScript.GetIsMultiplayerActivated() && zoomAllowed && (Input.GetKeyDown(KeyCode.M) || Input.GetKeyDown(KeyCode.RightShift))){
+            toggleCameraZoom();
+        }
     }
 
     public void SetPuzzleType(){
@@ -126,4 +134,21 @@ public class PuzzleManager : MonoBehaviour
             uiScript.PlayMinigameAgain();
         }
     }
+
+    public void toggleCameraZoom(){
+        zoomActive = !zoomActive;
+        GameObject puzzleObj = puzzles[currentPuzzle];
+        Puzzle puzScript = puzzleObj.GetComponent<Puzzle>();
+        //If zoom has been activated
+        if (zoomActive) {
+            cameraMovementScript.setTarget(puzzleObj.transform.Find("FloorPanel").gameObject);
+            cameraMovementScript.zoomToTarget(puzScript.zoomDistance);
+        }
+        //If zoom has been deactivated
+        else{
+            cameraMovementScript.setTargetPlayer();
+            cameraMovementScript.resetCameraZoom();
+        }
+    }
+
 }
