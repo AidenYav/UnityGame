@@ -2129,7 +2129,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3874280538186474205, guid: 5a949a98bb423dd48b6ba78867cca1d1, type: 3}
       propertyPath: puzzleTimeLimit
-      value: 60
+      value: 999
       objectReference: {fileID: 0}
     - target: {fileID: 3874280538186474205, guid: 5a949a98bb423dd48b6ba78867cca1d1, type: 3}
       propertyPath: puzzleCashMultiplier
@@ -4235,7 +4235,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3874280538186474205, guid: 5a949a98bb423dd48b6ba78867cca1d1, type: 3}
       propertyPath: puzzleTimeLimit
-      value: 40
+      value: 999
       objectReference: {fileID: 0}
     - target: {fileID: 3874280538186474205, guid: 5a949a98bb423dd48b6ba78867cca1d1, type: 3}
       propertyPath: puzzleCashMultiplier
@@ -59276,7 +59276,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3874280538186474205, guid: 5a949a98bb423dd48b6ba78867cca1d1, type: 3}
       propertyPath: puzzleTimeLimit
-      value: 90
+      value: 999
       objectReference: {fileID: 0}
     - target: {fileID: 3874280538186474205, guid: 5a949a98bb423dd48b6ba78867cca1d1, type: 3}
       propertyPath: puzzleCashMultiplier
@@ -60706,7 +60706,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2440502861772989554, guid: 201588ce76b8058429ce3f4f898fa0fe, type: 3}
       propertyPath: puzzleTimeLimit
-      value: 40
+      value: 999
       objectReference: {fileID: 0}
     - target: {fileID: 2440502861772989554, guid: 201588ce76b8058429ce3f4f898fa0fe, type: 3}
       propertyPath: puzzleCashMultiplier
@@ -72394,7 +72394,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2440502861772989554, guid: 201588ce76b8058429ce3f4f898fa0fe, type: 3}
       propertyPath: puzzleTimeLimit
-      value: 20
+      value: 999
       objectReference: {fileID: 0}
     - target: {fileID: 2440502861772989554, guid: 201588ce76b8058429ce3f4f898fa0fe, type: 3}
       propertyPath: puzzleCashMultiplier
@@ -81144,7 +81144,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3874280538186474205, guid: 5a949a98bb423dd48b6ba78867cca1d1, type: 3}
       propertyPath: puzzleTimeLimit
-      value: 120
+      value: 999
       objectReference: {fileID: 0}
     - target: {fileID: 3874280538186474205, guid: 5a949a98bb423dd48b6ba78867cca1d1, type: 3}
       propertyPath: puzzleCashMultiplier
@@ -93738,7 +93738,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2440502861772989554, guid: 201588ce76b8058429ce3f4f898fa0fe, type: 3}
       propertyPath: puzzleTimeLimit
-      value: 40
+      value: 999
       objectReference: {fileID: 0}
     - target: {fileID: 2440502861772989554, guid: 201588ce76b8058429ce3f4f898fa0fe, type: 3}
       propertyPath: puzzleCashMultiplier
@@ -99769,7 +99769,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3874280538186474205, guid: 5a949a98bb423dd48b6ba78867cca1d1, type: 3}
       propertyPath: puzzleTimeLimit
-      value: 30
+      value: 999
       objectReference: {fileID: 0}
     - target: {fileID: 3874280538186474205, guid: 5a949a98bb423dd48b6ba78867cca1d1, type: 3}
       propertyPath: puzzleCashMultiplier
