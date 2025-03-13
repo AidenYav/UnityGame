@@ -143,11 +143,13 @@ public class PuzzleManager : MonoBehaviour
         if (zoomActive) {
             cameraMovementScript.setTarget(puzzleObj.transform.Find("FloorPanel").gameObject);
             cameraMovementScript.zoomToTarget(puzScript.zoomDistance);
+            Movement_2D.SetCanMove(false);
         }
         //If zoom has been deactivated
         else{
             cameraMovementScript.setTargetPlayer();
             cameraMovementScript.resetCameraZoom();
+            Movement_2D.SetCanMove(true);
         }
     }
 

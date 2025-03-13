@@ -459,9 +459,11 @@ public class UI_Manager : MonoBehaviour
         //If the player is currently in a puzzle, enable the UI button for restarting the puzzle
         if (puzzleScript.GetInPuzzle()){
             Activate(menu.transform.Find("Restart Puzzle").gameObject);
+            Activate(menu.transform.Find("LeavePuzzle").gameObject);
         }
         else{
             Deactivate(menu.transform.Find("Restart Puzzle").gameObject);
+            Deactivate(menu.transform.Find("LeavePuzzle").gameObject);
         }
         //If the player is logged in (and connected to unity services)
         if (saveScript.GetSuccessfulLogin()){
@@ -483,6 +485,16 @@ public class UI_Manager : MonoBehaviour
         Deactivate(menu);
         Deactivate(cashCount);
         puzzleScript.RestartPuzzle();
+    }
+
+    public void QuitPuzzle(){
+        if (puzzleScript.zoomActive){
+            puzzleScript.toggleCameraZoom();
+            puzzleScript.zoomAllowed = false;
+        }
+        puzzleScript.GetCurrentPuzzle().GetComponent<Puzzle>().StopTimer();
+        LeaveMiniGame();
+        ClickedResume();
     }
 
 
