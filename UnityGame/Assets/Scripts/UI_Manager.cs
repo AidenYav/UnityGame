@@ -226,6 +226,10 @@ public class UI_Manager : MonoBehaviour
         puzzleScript.GetCurrentPuzzle().GetComponent<Puzzle>().ResetObsticles();
 
         GameObject newPuzzle = puzzleScript.NextPuzzle();
+        if (puzzleScript.GetCurrentPuzzleIndex() == 0){
+            LeaveMiniGame();
+            return;
+        }
         //These variables are less efficient, however this makes it easier to read the code
         Vector3 pos1 = newPuzzle.transform.GetComponent<Puzzle>().GetStartPosition();
         Vector3 pos2 = multiplayerManager.GetIsMultiplayerActivated() ? newPuzzle.transform.GetComponent<Puzzle>().GetStartPosition2() : new Vector3(0,0,0);
