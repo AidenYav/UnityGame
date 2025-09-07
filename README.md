@@ -7,6 +7,7 @@ Prepare to enter the realm of TavernTimes, a game that beckons thee to immerse t
 
 ### Install/Run Instructions
 Online version: https://someone1027.itch.io/tavern-times
+Online version 2.0: https://someone1027.itch.io/taverntimes-update
 
 You can also download an older version under the _CompletedGameVersions folder, however, this is more of a prototype of our game.
 
